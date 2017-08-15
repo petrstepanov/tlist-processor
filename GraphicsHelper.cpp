@@ -95,7 +95,8 @@ TPadPair GraphicsHelper::drawHist3D(TH2* hist, TCanvas* canvas, TF2* tf2, Bool_t
 
 	// Set Pallette - in ROOT6 use kBird
 //        Int_t* myPalette = ;
-	gStyle->SetPalette(255, GraphicsHelper::getBirdPalette()); // ROOT 5
+//	gStyle->SetPalette(255, GraphicsHelper::getBirdPalette()); // ROOT 5
+	gStyle->SetPalette(57); // ROOT 6
 
 	// Draw Histogram
 	// canvas->Clear();
