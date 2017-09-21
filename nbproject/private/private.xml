@@ -9,10 +9,9 @@
         <group>
             <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/TlistProcessorFrame.cpp</file>
             <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/HistProcessor.cpp</file>
+            <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/TlistProcessorFrame.h</file>
             <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/FittingFunctions.cpp</file>
             <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/GraphicsHelper.cpp</file>
-            <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/GraphicsHelper.h</file>
-            <file>file:/Users/petrstepanov/Development/NetBeansProjects/tlist-processor/Geometry.cpp</file>
         </group>
     </open-files>
 </project-private>

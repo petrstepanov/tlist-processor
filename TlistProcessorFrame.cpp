@@ -422,8 +422,8 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParLimits(24, histYlength, histYlength);
 
 		bgf2->SetParName(25, "range");
-		bgf2->SetParameter(25, 2);  // Set range only sides
-		bgf2->SetParLimits(25, 2, 2);  // Set range only sides
+		bgf2->SetParameter(25, 1);  // Set range only sides
+		bgf2->SetParLimits(25, 1, 1);  // Set range only sides
 
 		bgf2->SetParName(26, "spectFWHM2");
 		bgf2->SetParameter(26, 5);
@@ -604,9 +604,10 @@ void TlistProcessorFrame::updateAxisRange(){
 
 	Double_t dEplus = numberPlusEnergy->GetNumber();
 	Double_t dEminus = numberMinusEnergy->GetNumber();
+        Double_t e511 = e1Mean > 250 ? 511 : 0;    
 	pad12->cd();
 	if (doRegion){
-            GraphicsHelper::drawHistSumRegion(min, max, min, max, e1Mean, e2Mean, dEplus, dEminus, rotateSpectrum);
+            GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, rotateSpectrum);
         }
 
 	// Update Canvases
@@ -622,7 +623,7 @@ void TlistProcessorFrame::updateAxisRange(){
 		TPad* pad22 = padsPair2.second;
 		pad22->cd();
 		if (doRegion){
-                    GraphicsHelper::drawHistSumRegion(min, max, min, max, e1Mean, e2Mean, dEplus, dEminus, rotateSpectrum);
+                    GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, rotateSpectrum);
                 }
 		pad21->Modified();
 		pad22->Modified();

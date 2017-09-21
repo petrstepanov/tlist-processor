@@ -43,8 +43,8 @@ Int_t* GraphicsHelper::getBirdPalette(void){
 
 void GraphicsHelper::drawHistSumRegion(Double_t e1Min, Double_t e1Max, Double_t e2Min, Double_t e2Max, Double_t e1_0, Double_t e2_0, Double_t dEplus, Double_t dEminus, Bool_t isRotated){
     // Draw sum region
-    // e1_0 = e1_0 > 250 ? 511: 0;
-    // e2_0 = e2_0 > 250 ? 511: 0;
+//    e1_0 = e1_0 > 250 ? 511: 0;
+//    e2_0 = e2_0 > 250 ? 511: 0;
 
     if (isRotated){
         Double_t x[7] = { e1Min,
@@ -221,8 +221,10 @@ TPadPair GraphicsHelper::drawHist3D(TH2* hist, TCanvas* canvas, TF2* tf2, Bool_t
 	line2->SetLineWidth(1);
 	line2->Draw();
 
-	if (doRegion) drawHistSumRegion(e1Min, e1Max, e2Min, e2Max, e1_0, e2_0, dEplus, dEminus, isRotated);
-
+	if (doRegion){
+            Double_t e511 = e1_0 > 250 ? 511 : 0;    
+            drawHistSumRegion(e1Min, e1Max, e2Min, e2Max, e511, e511, dEplus, dEminus, isRotated);
+        }
 	// Update pads
 	pad2D->Modified();
 	pad3D->Modified();

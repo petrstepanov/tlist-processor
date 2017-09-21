@@ -91,19 +91,15 @@ Double_t ridgeProfile(Double_t e, Double_t* par){
 		ridge += orePowell(e, mc2) * threeGammaInt;
 	}
 
-	// Exponential tail due to pile-up
-	if (hiExpContrib > 1E-2){
-		if (e >= mc2){
-			ridge = exp(-(e-mc2)/hiExpStretch) * hiExpContrib * comptonInt;
-		}
-	}
+	// Exponential tail due to pile-up, 
+//        if (e >= mc2){
+//                ridge += exp(-(e-mc2)/hiExpStretch) * hiExpContrib * comptonInt;
+//        }
 
 	// Exponential tail due to a ballistic deficit and pulse shaping problems
-	if (lowExpContrib > 1E-2){
-		if (e < mc2){
-			ridge = exp((e-mc2)/lowExpStretch) * lowExpContrib * threeGammaInt;
-		}
-	}
+//        if (e < mc2){
+//                ridge += exp((e-mc2)/lowExpStretch) * lowExpContrib * (threeGammaInt + comptonInt);
+//        }
 
 	return ridge;
 }
@@ -150,7 +146,7 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
             break;
         }
         case 2: {
-            if (x[0] > -x[1] + 2 * mc2 - 9 && x[0] < -x[1] + 2 * mc2 + 8){
+            if (x[0] > -x[1] + 2 * mc2 - 5 && x[0] < -x[1] + 2 * mc2 + 5){
                     TF1::RejectPoint();
                     // return 0;
             }
@@ -160,15 +156,15 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     }
 
     // Ridge profiles
-    Double_t ridge1Par[7] = {comptonIntE1, threeGammaIntE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, meanE1};
+    Double_t ridge1Par[7] = {comptonIntE1, threeGammaIntE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
     Double_t ridgeAlongE1 = (TMath::Gaus(_y, meanE2, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_y, meanE2, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
-                          // * ridgeProfile(_x, ridge1Par);
-                          * convolutionGauss(ridgeProfile, _x, ridge1Par, 1.5);
+//                          * ridgeProfile(_x, ridge1Par);
+                          * convolutionGauss(ridgeProfile, _x, ridge1Par, 1.7);
 
-    Double_t ridge2Par[7] = {comptonIntE2, threeGammaIntE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, meanE2};
+    Double_t ridge2Par[7] = {comptonIntE2, threeGammaIntE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
     Double_t ridgeAlongE2 = (TMath::Gaus(_x, meanE1, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_x, meanE1, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
-                          // * ridgeProfile(_y, ridge2Par);
-                          * convolutionGauss(ridgeProfile, _y, ridge2Par, 1.5);
+//                          * ridgeProfile(_y, ridge2Par);
+                          * convolutionGauss(ridgeProfile, _y, ridge2Par, 1.7);
 
     Double_t returnVal = ridgeAlongE1 + ridgeAlongE2;
 

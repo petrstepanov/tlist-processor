@@ -296,7 +296,7 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
         ss >> count;
 
         // Push values to array and cut Kompton edges
-        if (e1>490 && e1 < 530 && e2>490 && e2 < 530){
+//        if (e1>490 && e1 < 530 && e2>490 && e2 < 530){
 
 //            Double_t sqrt2 = std::sqrt(2.);
 //            if (checkboxSqrt2->IsOn()){
@@ -316,7 +316,7 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
             if (std::find(e2Values.begin(), e2Values.end(), e2) == e2Values.end()) {
                     e2Values.push_back(e2);
             }
-        }
+//        }
     }
     inFile.close();
 
