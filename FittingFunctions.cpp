@@ -24,11 +24,12 @@
 //FittingFunctions::~FittingFunctions() {
 //}
 
+Double_t FWHMtoSigma =  1/TMath::Sqrt(8*TMath::Log(2));
+
 Double_t convolutionGauss(Double_t (*f)(Double_t, Double_t*), Double_t x, Double_t* par, Double_t convFWHM){
     // Control constants
     Int_t np = 20;          // number of convolution steps
-    Double_t sc = 4.0;      // convolution extends to +-sc Gaussian sigmas (5?)
-    Double_t FWHMtoSigma =  1./2.3548;
+    Double_t sc = 4.0;      // convolution extends to +-sc Gaussian sigmas (5?
 
     // Range of convolution integrals
     Double_t eLow = x - sc * convFWHM * FWHMtoSigma;
@@ -48,7 +49,6 @@ Double_t convolutionGauss(Double_t (*f)(Double_t*, Double_t*), Double_t* x, Doub
     // Control constants
     Int_t np = 10;          // number of convolution steps
     Double_t sc = 3.0;      // convolution extends to +-sc Gaussian sigmas
-    Double_t FWHMtoSigma =  1./2.3548;
 
     // Range of convolution integrals
     Double_t e1low = x[0] - sc * convFWHM * FWHMtoSigma;
@@ -77,10 +77,10 @@ Double_t orePowell(Double_t e, Double_t mc2){
 Double_t ridgeProfile(Double_t e, Double_t* par){
 	Double_t comptonInt    = par[0];
 	Double_t threeGammaInt = par[1];
-	Double_t lowExpContrib = par[2];
-	Double_t lowExpStretch = par[3];
-	Double_t hiExpContrib  = par[4];
-	Double_t hiExpStretch  = par[5];
+//	Double_t lowExpContrib = par[2];
+//	Double_t lowExpStretch = par[3];
+//	Double_t hiExpContrib  = par[4];
+//	Double_t hiExpStretch  = par[5];
 	Double_t mc2 = par[6];
 
 	// Coincidence with Compton scattered gamma-ray
@@ -128,25 +128,32 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     // Double_t maxCount = par[20];
     // Double_t g1Int = par[21];
     // Double_t g2Int = par[22];
-    Double_t histXlength = par[23];
-    Double_t histYlength = par[24];
-    Double_t region = par[25];
+    Double_t xMin = par[23];
+    Double_t xMax = par[24];
+    Double_t yMin = par[25];
+    Double_t yMax = par[26];
+    Int_t fitRegion = par[27];
 
     Double_t _x = x[0], _y = x[1];
-    Double_t FWHMtoSigma =  1. / 2.3548;
     Double_t mc2 = meanE1 > 250 ? 511 : 0;
 
-    // Fit region: 1) only sides  2) all but the peak
-    switch((int)region){
-        case 1: {
-            if (x[0] > mc2 - 0.4*histXlength && x[0] < mc2 + 0.4*histXlength && x[1] > mc2 - 0.4*histYlength && x[1] < mc2 + 0.4*histYlength){
+    // Fit region 
+    Int_t borderWidth = 2;
+    Int_t spectHalfWidth = 5;
+    switch(fitRegion){
+        case 1: {   // only sides 
+            if (_x > xMin + borderWidth && _x < xMax - borderWidth && _y > yMin + borderWidth && _y < yMax - borderWidth){
                     TF1::RejectPoint();
                     // return 0;
             }
+            if (_y < -_x + 2*mc2 - spectHalfWidth && _y > -_x + 2*mc2 + spectHalfWidth){
+                    TF1::RejectPoint();
+                    // return 0;
+            }            
             break;
         }
-        case 2: {
-            if (x[0] > -x[1] + 2 * mc2 - 5 && x[0] < -x[1] + 2 * mc2 + 5){
+        case 2: {   //all but the peak
+            if (_y < -_x + 2*mc2 - spectHalfWidth && _y > -_x + 2*mc2 + spectHalfWidth){
                     TF1::RejectPoint();
                     // return 0;
             }
@@ -208,16 +215,18 @@ Double_t spectfunc(Double_t *x, Double_t *par){
     Double_t maxCount = par[20];
     Double_t g1Int = par[21];
     Double_t g2Int = par[22];
-    Double_t histXlength = par[23];
-    Double_t histYlength = par[24];
-    Double_t region = par[25];
-    Double_t spectFWHM2 = par[26];
-    Double_t spectG1Int = par[27];
+    Double_t xMin = par[23];
+    Double_t xMax = par[24];
+    Double_t yMin = par[25];
+    Double_t yMax = par[26];
+    Int_t fitRegion = par[27];
+    Double_t spectFWHM2 = par[28];
+    Double_t spectG1Int = par[29];
 
     // Add background
     Double_t returnVal = bgfunc(x, par);
 
-    if (region != 1){
+    if (fitRegion != 1){
         // Add annihilation peak
         Double_t x_rotate[2];
         Double_t theta = 0.785398; // 45 degrees clockwise rotated

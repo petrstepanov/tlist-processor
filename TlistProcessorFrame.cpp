@@ -73,11 +73,11 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 	checkboxEnergyRegion = new TGCheckButton(frameMiddleBar, "Cut energy region:   -");
 	// checkboxEnergyRegion->SetOn();
 	// TGLabel* labelEnergyRegion = new TGLabel(frameMiddleBar, "Energy region, keV:   -");
-	numberMinusEnergy = new TGNumberEntry(frameMiddleBar, 2.4, 3, -1, TGNumberFormat::kNESRealOne,
+	numberMinusEnergy = new TGNumberEntry(frameMiddleBar, 3.3, 3, -1, TGNumberFormat::kNESRealOne,
 		TGNumberFormat::kNEANonNegative,
 		TGNumberFormat::kNELLimitMin, 0);
 	TGLabel* labelE1E2 = new TGLabel(frameMiddleBar, "< E1 + E2 - 2mc^2 <");
-	numberPlusEnergy = new TGNumberEntry(frameMiddleBar, 2.4, 3, -1, TGNumberFormat::kNESRealOne,
+	numberPlusEnergy = new TGNumberEntry(frameMiddleBar, 1.7, 3, -1, TGNumberFormat::kNESRealOne,
 		TGNumberFormat::kNEANonNegative,
 		TGNumberFormat::kNELLimitMin, 0);
 	frameMiddleBar->AddFrame(numberPlusEnergy, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 5*dx, 1, 0));
@@ -276,39 +276,43 @@ void TlistProcessorFrame::processSpectrum(void){
 
 		// Two extra parameters will be a histogram width and height.
 		// It is important to correct fitting of the bad spectra with artefacts on the sides
-		Double_t histXlength = hist->GetXaxis()->GetXmax() - hist->GetXaxis()->GetXmin();
-		Double_t histYlength = hist->GetYaxis()->GetXmax() - hist->GetYaxis()->GetXmin();
+		Double_t histXmin = hist->GetXaxis()->GetXmin();
+		Double_t histXmax = hist->GetXaxis()->GetXmax();
+		Double_t histYmin = hist->GetYaxis()->GetXmin();
+		Double_t histYmax = hist->GetYaxis()->GetXmax();
 
 		// Define background function parameter starting values
-		const int npar = 28;
-		Double_t f2params[npar] = { hiSleeveMaxCount,						// 0) threeGammaIntE1
+		const int npar = 30;
+		Double_t f2params[npar] = { hiSleeveMaxCount,					// 0) threeGammaIntE1
 		                            lowSleeveMaxCount,					// 1) comptonIntE1
-		                            hiSleeveMaxCount,						// 2) threeGammaIntE2
+		                            hiSleeveMaxCount,					// 2) threeGammaIntE2
 		                            lowSleeveMaxCount,					// 3) comptonIntE2
-		                            e1Mean,											// 4)
-		                            e2Mean,											// 5)
-		                            3,													// 6) armFWHM1
-		                            5,													// 7) armFWHM2
-		                            0.02,												// 8) secondGaussFraction
-		                            0.01,												// 9) bg1
-		                            0.04,												// 10) bg24
-		                            0.21,												// 11) bg3
-		                            10,													// 12) lowExpStretch
-		                            10,													// 13) hiExpStretch
-		                            1e-10,											// 14) lowExpContrib
-		                            0,													// 15) hiExpContrib
-		                            2,													// 16) FWHM1
-		                            5,													// 17) FWHM2
-		                            15,													// 18) FWHM3
-		                            2,													// 19) spectFWHM
+		                            e1Mean,						// 4)
+		                            e2Mean,						// 5)
+		                            3,							// 6) armFWHM1
+		                            5,							// 7) armFWHM2
+		                            0.02,						// 8) secondGaussFraction
+		                            0.01,						// 9) bg1
+		                            0.04,						// 10) bg24
+		                            0.21,						// 11) bg3
+		                            10,							// 12) lowExpStretch
+		                            10,							// 13) hiExpStretch
+		                            1e-10,						// 14) lowExpContrib
+		                            0,							// 15) hiExpContrib
+		                            2,							// 16) FWHM1
+		                            5,							// 17) FWHM2
+		                            15,							// 18) FWHM3
+		                            2,							// 19) spectFWHM
 		                            hist->GetMaximum(),					// 20) maxCount
-		                            0.8,												// 21) g1Int
-		                            0.8,												// 22) g2Int
-		                            histXlength,								// 23)
-		                            histYlength,								// 24)
-		                            1,													// 25) exclude option - 0) full fit, 1) only ridge sides
-		                            5,													// 26) spectFWHM2
-		                            0.1};												// 27) spectG1Int
+		                            0.8,						// 21) g1Int
+		                            0.8,						// 22) g2Int
+		                            histXmin,                                           // 23)
+                                            histXmax,                                           // 24)
+		                            histYmin,                                           // 24)
+                                            histYmax,                                           // 25)
+		                            1,							// 25) exclude option - 0) full fit, 1) only ridge sides
+		                            5,							// 26) spectFWHM2
+		                            0.1};						// 27) spectG1Int
 
 		// Define correct background function (rotated or not)
 		bgf2 = (TF2*)gROOT->GetListOfFunctions()->FindObject("bgf2");
@@ -413,25 +417,33 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParameter(22, 0.8);
 		bgf2->SetParLimits(22, 0.8, 0.8);
 
-		bgf2->SetParName(23, "xLength");
-		bgf2->SetParameter(23, histXlength);
-		bgf2->SetParLimits(23, histXlength, histXlength);
+		bgf2->SetParName(23, "histXmin");
+		bgf2->SetParameter(23, histXmin);
+		bgf2->SetParLimits(23, histXmin, histXmin);
+                
+		bgf2->SetParName(24, "histXmax");
+		bgf2->SetParameter(24, histXmax);
+		bgf2->SetParLimits(24, histXmax, histXmax);                
 
-		bgf2->SetParName(24, "yLength");
-		bgf2->SetParameter(24, histYlength);
-		bgf2->SetParLimits(24, histYlength, histYlength);
+		bgf2->SetParName(25, "histYmin");
+		bgf2->SetParameter(25, histYmin);
+		bgf2->SetParLimits(25, histYmin, histYmin);
+                
+		bgf2->SetParName(26, "histYmax");
+		bgf2->SetParameter(26, histYmax);
+		bgf2->SetParLimits(26, histYmax, histYmax);                 
 
-		bgf2->SetParName(25, "range");
-		bgf2->SetParameter(25, 1);  // Set range only sides
-		bgf2->SetParLimits(25, 1, 1);  // Set range only sides
+		bgf2->SetParName(27, "fitRange");
+		bgf2->SetParameter(27, 1);  // Set range only sides
+		bgf2->SetParLimits(27, 1, 1);  // Set range only sides
 
-		bgf2->SetParName(26, "spectFWHM2");
-		bgf2->SetParameter(26, 5);
-		bgf2->SetParLimits(26, 1, 10);
+		bgf2->SetParName(28, "spectFWHM2");
+		bgf2->SetParameter(28, 5);
+		bgf2->SetParLimits(28, 1, 10);
 
-		bgf2->SetParName(27, "spectG1I");
-		bgf2->SetParameter(27, 0.8);
-		bgf2->SetParLimits(27, 1E-4, 1);											// Spect Gauss 1 Int
+		bgf2->SetParName(29, "spectG1I");
+		bgf2->SetParameter(29, 0.8);
+		bgf2->SetParLimits(29, 1E-4, 1);											// Spect Gauss 1 Int
 
 		// Fit histogram with arms
 		// "S" The result of the fit is returned in the TFitResultPtr
@@ -449,7 +461,7 @@ void TlistProcessorFrame::processSpectrum(void){
 
 
 		// Range - whole area
-		bgf2->SetParameter(25, 0);  // Set full range
+//		bgf2->SetParameter(25, 0);  // Set full range
 
 		// And fit again
 		// r = hist->Fit("bgf2", "S0L");

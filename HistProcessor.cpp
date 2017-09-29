@@ -415,7 +415,7 @@ void HistProcessor::saveHistToFile(TH1* hist, const char* filename) {
 
 	for (Int_t bin = 1; bin < 1 + hist->GetNbinsX(); bin++){
 		Double_t dE = hist->GetXaxis()->GetBinCenter(bin);
-		Int_t count = hist->GetBinContent(bin);
+		Double_t count = hist->GetBinContent(bin);
 		outputFile << dE << ","
 			<< count << std::endl;
 	}

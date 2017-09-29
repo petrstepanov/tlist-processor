@@ -82,6 +82,7 @@ private:
     TH1* histDoppler;
     TH1* histSumNumber;
     TH2* histProject;
+    
     TF2* bgf2;
     TF2* peakf2;
     TPadPair padsPair1;
