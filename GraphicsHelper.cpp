@@ -28,18 +28,18 @@ GraphicsHelper::GraphicsHelper(const GraphicsHelper& orig) {
 
 GraphicsHelper::~GraphicsHelper() {
 }
-
-Int_t* GraphicsHelper::getBirdPalette(void){
-    Int_t myPalette[255];
-    Double_t stops[9] = { 0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000 };
-
-    Double_t red[9] = { 0.2082, 0.0592, 0.0780, 0.0232, 0.1802, 0.5301, 0.8186, 0.9956, 0.9764 };
-    Double_t green[9] = { 0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832 };
-    Double_t blue[9] = { 0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539 };
-    Int_t FI = TColor::CreateGradientColorTable(9, stops, red, green, blue, 255);
-    for (Int_t i = 0; i < 255; i++) myPalette[i] = FI + i;
-    return myPalette;
-}
+//
+//Int_t* GraphicsHelper::getBirdPalette(void){
+//    Int_t myPalette[255] = new Int(255);
+//    Double_t stops[9] = { 0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000 };
+//
+//    Double_t red[9] = { 0.2082, 0.0592, 0.0780, 0.0232, 0.1802, 0.5301, 0.8186, 0.9956, 0.9764 };
+//    Double_t green[9] = { 0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832 };
+//    Double_t blue[9] = { 0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539 };
+//    Int_t FI = TColor::CreateGradientColorTable(9, stops, red, green, blue, 255);
+//    for (Int_t i = 0; i < 255; i++) myPalette[i] = FI + i;
+//    return myPalette;
+//}
 
 void GraphicsHelper::drawHistSumRegion(Double_t e1Min, Double_t e1Max, Double_t e2Min, Double_t e2Max, Double_t e1_0, Double_t e2_0, Double_t dEplus, Double_t dEminus, Bool_t isRotated){
     // Draw sum region
@@ -94,9 +94,7 @@ TPadPair GraphicsHelper::drawHist3D(TH2* hist, TCanvas* canvas, TF2* tf2, Bool_t
 	TAxis* zAxis = hist->GetZaxis();
 
 	// Set Pallette - in ROOT6 use kBird
-//        Int_t* myPalette = ;
-//	gStyle->SetPalette(255, GraphicsHelper::getBirdPalette()); // ROOT 5
-	gStyle->SetPalette(57); // ROOT 6
+	gStyle->SetPalette(kBird); // ROOT 6
 
 	// Draw Histogram
 	// canvas->Clear();
@@ -160,7 +158,7 @@ TPadPair GraphicsHelper::drawHist3D(TH2* hist, TCanvas* canvas, TF2* tf2, Bool_t
 
 		// Set mesh line parameters
 		tf2->SetLineWidth(1);
-		tf2->SetLineColor(kGray);
+		tf2->SetLineColorAlpha(0, 0.4); // white, 40%
 
 		// Draw fit function
 		// TCutG *cutg = new TCutG("cutg", 5);
@@ -270,6 +268,7 @@ void GraphicsHelper::drawHist(TH1* hist, TCanvas* c, Bool_t setLogZ, Double_t mi
 void GraphicsHelper::saveCanvasToImage(TCanvas* c, TString* filename){
 	std::cout << "Saving \"" << c->GetName() << "\" to " << filename->Data() << std::endl;
 	TImage *imgCanvas = TImage::Create();
+//        c->cd();
 	imgCanvas->FromPad(c);
 	imgCanvas->WriteImage(filename->Data());
 }

@@ -84,8 +84,22 @@ MYLDFLAGS=-m64
 MYGLIBS=-L/Applications/root_v6.06.02/lib -lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lpthread -stdlib=libc++ -lm -ldl
 MYLIBS=-L/Applications/root_v6.06.02/lib -lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lpthread -stdlib=libc++ -lm -ldl -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 MYROOTSYS=/Applications/root_v6.06.02
-MYHEADERS=AppSettings.h FittingFunctions.h Geometry.h GraphicsHelper.h HistProcessor.h StringUtils.h TlistProcessorFrame.h
-MYSOURCES=AppSettings.cpp FittingFunctions.cpp Geometry.cpp GraphicsHelper.cpp HistProcessor.cpp StringUtils.cpp TlistProcessorFrame.cpp main.cc
+MYHEADERS=AppSettings.h \
+          Constants.h \
+          FittingFunctions.h \
+          Geometry.h \
+          GraphicsHelper.h \
+          HistProcessor.h \
+          StringUtils.h \
+          TlistProcessorFrame.h
+MYSOURCES=AppSettings.cpp \
+          Constants.cpp \
+          FittingFunctions.cpp \
+          Geometry.cpp \
+          GraphicsHelper.cpp \
+          HistProcessor.cpp \
+          StringUtils.cpp \
+          TlistProcessorFrame.cpp main.cc
 
 # build
 build: .build-post

@@ -12,57 +12,64 @@
  */
 
 #include <TGFileDialog.h>
+#include <TG3DLine.h>
 #include <TColor.h>
 #include <TPolyLine.h>
 #include <TROOT.h>
 #include <TStyle.h>
+#include <TColor.h>
 #include <TLine.h>
 #include <TImage.h>
+#include <TLatex.h>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include <iterator>
+#include <string>
+#include <algorithm>
 #include "AppSettings.h"
+#include "Constants.h"
+#include "FittingFunctions.h"
 #include "HistProcessor.h"
 #include "TlistProcessorFrame.h"
 #include "TlistProcessorFrameLinkDef.h"
 
 TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
-	mainFrame = new TGMainFrame(p, w, h, kMainFrame | kVerticalFrame);
-	mainFrame->SetName("mainFrame");
-	mainFrame->SetWindowName("TLIST Processor");
-	mainFrame->SetIconPixmap("icon.png");
+//	mainFrame = new TGMainFrame(p, w, h, kMainFrame | kVerticalFrame);
+//	mainFrame->SetName("mainFrame");
+	this->SetWindowName("TLIST Processor");
+	this->SetIconPixmap("icon.png");
 	defaultDisplayOffset = 15;
 	int dx = 10;
 	UInt_t canvasWidth = 1000;
 	UInt_t canvasHeight = 500;
+
 	// Toolbars
-	TGHorizontalFrame *frameTopBar = new TGHorizontalFrame(mainFrame);
-	TGHorizontalFrame *frameMiddleBar = new TGHorizontalFrame(mainFrame);
-	TGHorizontalFrame *frameBottomBar = new TGHorizontalFrame(mainFrame);
+	TGHorizontalFrame *frameTopBar = new TGHorizontalFrame(this);
+	TGHorizontalFrame *frameMiddleBar = new TGHorizontalFrame(this);
+	TGHorizontalFrame *frameBottomBar = new TGHorizontalFrame(this);
 
 	// TOP TOOLBAR
 	// Open File Button
 	TGTextButton *fOpenFileButton = new TGTextButton(frameTopBar, "Open File");
 	fOpenFileButton->Connect("Clicked()", "TlistProcessorFrame", this, "openFileButtonClicked()");
-	frameTopBar->AddFrame(fOpenFileButton, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, 0, 0, 0));
+	frameTopBar->AddFrame(fOpenFileButton, new TGLayoutHints(kLHintsLeft | kLHintsTop));
 
+	// Rotation checkbox
+	checkboxRotate = new TGCheckButton(frameTopBar, "45 degree rotation");
+	frameTopBar->AddFrame(checkboxRotate, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));        
+        
 	// Filename
 	labelFilename = new TGLabel(frameTopBar, "");
-	labelFilename->SetTextJustify(kTextLeft);
-	frameTopBar->AddFrame(labelFilename, new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2 * dx, 5 * dx, 3, 0));
+	labelFilename->SetTextJustify(kTextRight | kTextTop);
+	frameTopBar->AddFrame(labelFilename, new TGLayoutHints(kLHintsLeft | kLHintsExpandX, dx, 0, 3, 0));        
 
-	// Draw Option
-	comboDrawOption = new TGComboBox(frameTopBar, 0);
-	frameTopBar->AddFrame(comboDrawOption, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 0, 0, 0));
-	comboDrawOption->AddEntry("LEGO2",1);
-	comboDrawOption->AddEntry("SURF2",2);
-	comboDrawOption->Select(2);
-	comboDrawOption->Resize(75, 20);
+	this->AddFrame(frameTopBar, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX, dx, dx, dx, dx));
 
-	TGLabel* labelDrawOption = new TGLabel(frameTopBar, "Histogram draw option");
-	frameTopBar->AddFrame(labelDrawOption, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 2*dx, 3, 0));
-
+        // Separator
+        this->AddFrame(new TGHorizontal3DLine(this), new TGLayoutHints(kLHintsExpandX, dx, dx));
+        
 	// MIDDLE TOOLBAR
 	// Project button
 	buttonProcessSpectrum = new TGTextButton(frameMiddleBar, "Process Spectrum");
@@ -70,18 +77,37 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 	frameMiddleBar->AddFrame(buttonProcessSpectrum, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 0, 0, 0));
 
 	// Projection Range
-	checkboxEnergyRegion = new TGCheckButton(frameMiddleBar, "Cut energy region:   -");
-	// checkboxEnergyRegion->SetOn();
+	checkboxEnergyRegion = new TGCheckButton(frameMiddleBar, "Cut energy region, keV");
+        checkboxEnergyRegion->Connect("Clicked()", "TlistProcessorFrame", this, "onCheckboxEnergyRegionClicked()");
+	checkboxEnergyRegion->SetOn();
 	// TGLabel* labelEnergyRegion = new TGLabel(frameMiddleBar, "Energy region, keV:   -");
-	numberMinusEnergy = new TGNumberEntry(frameMiddleBar, 3.3, 3, -1, TGNumberFormat::kNESRealOne,
-		TGNumberFormat::kNEANonNegative,
-		TGNumberFormat::kNELLimitMin, 0);
-	TGLabel* labelE1E2 = new TGLabel(frameMiddleBar, "< E1 + E2 - 2mc^2 <");
+	numberMinusEnergy = new TGNumberEntry(frameMiddleBar, -3.3, 4, -1, TGNumberFormat::kNESRealOne,
+		TGNumberFormat::kNEAAnyNumber,
+		TGNumberFormat::kNELLimitMax, 0);
+        
+//	TGLabel* labelE1E2 = new TGLabel(frameMiddleBar, "< E1 + E2 - 2mc^2 <");
 	numberPlusEnergy = new TGNumberEntry(frameMiddleBar, 1.7, 3, -1, TGNumberFormat::kNESRealOne,
 		TGNumberFormat::kNEANonNegative,
 		TGNumberFormat::kNELLimitMin, 0);
-	frameMiddleBar->AddFrame(numberPlusEnergy, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 5*dx, 1, 0));
-	frameMiddleBar->AddFrame(labelE1E2, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, dx, 4, 0));
+	frameMiddleBar->AddFrame(numberPlusEnergy, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 2*dx, 1, 0));
+//	frameMiddleBar->AddFrame(labelE1E2, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, dx, 4, 0));
+        {
+            Int_t colorIndex = 9999;
+            TColor *c = new TColor(colorIndex, 0.906, 0.906, 0.906); // grey canvas background color
+            TRootEmbeddedCanvas* trec = new TRootEmbeddedCanvas("trec", frameMiddleBar, 113, 20, 0);
+            trec->GetCanvas()->cd();
+            trec->GetCanvas()->SetFillColor(colorIndex);      
+            TLatex* latex = new TLatex();
+            Double_t fontnumber = 4; // helvetica-medium-r-normal  "Arial"
+            Int_t precision = 3;     // Text size is given in pixels
+            latex->SetTextFont(10*fontnumber + precision); // precision 2, font number 4 ()
+            latex->SetTextSize(14);
+            latex->SetTextAlign(13);  //align at top
+            latex->DrawLatex(0, 0.9, "< E_{1} + E_{2} #minus 2mc^{2} <");
+            frameMiddleBar->AddFrame(trec, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, dx, 1));
+            trec->GetCanvas()->SetEditable(kFALSE);
+        }
+        
 	frameMiddleBar->AddFrame(numberMinusEnergy, new TGLayoutHints(kLHintsRight, 0, dx, 1, 0));
 	frameMiddleBar->AddFrame(checkboxEnergyRegion, new TGLayoutHints(kLHintsRight, 0, 0, 3, 0));
 
@@ -89,21 +115,25 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 //	checkboxSqrt2 = new TGCheckButton(frameMiddleBar, "Spectrum is sqrt(2) scaled");
 //	frameMiddleBar->AddFrame(checkboxSqrt2, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, 3 * dx, 3, 0));
 
-	// Rotation checkbox
-	checkboxRotate = new TGCheckButton(frameMiddleBar, "45 degree rotation");
-	frameMiddleBar->AddFrame(checkboxRotate, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, 3 * dx, 3, 0));
-
 	// Background checkbox
-	checkboxSubtractBackground = new TGCheckButton(frameMiddleBar, "Fit and subtract background");
-	frameMiddleBar->AddFrame(checkboxSubtractBackground, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, 10, 3, 0));
+	checkboxSubtractBackground = new TGCheckButton(frameMiddleBar, "Subtract background.");
+	frameMiddleBar->AddFrame(checkboxSubtractBackground, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 3, 0));
 	checkboxSubtractBackground->SetOn();
 
+        // Resolution 
+	frameMiddleBar->AddFrame(new TGLabel(frameMiddleBar, "Detector FWHM, keV"), new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 4));
+	numberResolutionFWHM = new TGNumberEntry(frameMiddleBar, 1.0, 3, -1, TGNumberFormat::kNESRealOne,
+		TGNumberFormat::kNEAPositive,
+		TGNumberFormat::kNELLimitMin, 0);
+	frameMiddleBar->AddFrame(numberResolutionFWHM, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx));
+//	frameMiddleBar->AddFrame(new TGLabel(frameMiddleBar, "keV"), new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 4));
+        
+        
 	// Add Bars
-	mainFrame->AddFrame(frameTopBar, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX, dx, dx, dx, dx));
-	mainFrame->AddFrame(frameMiddleBar, new TGLayoutHints(kLHintsExpandX | kLHintsTop, dx, dx, dx, dx));
+	this->AddFrame(frameMiddleBar, new TGLayoutHints(kLHintsExpandX | kLHintsTop, dx, dx, dx, dx));
 
 	// tabsWithCanvases
-	tabsWithCanvases = new TGTab(mainFrame);
+	tabsWithCanvases = new TGTab(this);
 
 	// Full Spectrum Tab
 	TGCompositeFrame *tab2DFull = tabsWithCanvases->AddTab("Original 2D Spectrum");
@@ -129,14 +159,27 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 	//TGHorizontalFrame *frameBottomBar = new TGHorizontalFrame(mainFrame);
 
 	// BOTTOM TOOLBAR
+	// Draw Option
+	TGLabel* labelDrawOption = new TGLabel(frameBottomBar, "Histogram draw option");
+	frameBottomBar->AddFrame(labelDrawOption, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 3, 0));
+        comboDrawOption = new TGComboBox(frameBottomBar, 0);
+        frameBottomBar->AddFrame(comboDrawOption, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, 3*dx));
+        Int_t i = 0;
+        std::for_each(std::begin(Constants::drawOptions), 
+                      std::end(Constants::drawOptions), 
+                      [&](std::string const &str) {
+            comboDrawOption->AddEntry(str.c_str(),++i);            
+        });  
+	comboDrawOption->Select(1);
+	comboDrawOption->Resize(75, 20);
+        
 	TGLabel* fDisplayLabel = new TGLabel(frameBottomBar, "Display Range");
 	fDisplayLabel->SetTextJustify(kTextLeft);
 	numberDisplayMin = new TGNumberEntry(frameBottomBar, 511 - defaultDisplayOffset, 3, -1, TGNumberFormat::kNESInteger,
 		TGNumberFormat::kNEAAnyNumber,
 		TGNumberFormat::kNELLimitMinMax,
 		0, 510);
-	numberDisplayMin->GetNumberEntry()->Connect("TextChanged(char*)", "TlistProcessorFrame",
-		this, "displayMinNumberChanged()");
+	numberDisplayMin->GetNumberEntry()->Connect("TextChanged(char*)", "TlistProcessorFrame", this, "displayMinNumberChanged()");
 	TGLabel *lblFitDash = new TGLabel(frameBottomBar, "-");
 	numberDisplayMax = new TGNumberEntry(frameBottomBar, 511 + defaultDisplayOffset, 3, -1, TGNumberFormat::kNESInteger,
 		TGNumberFormat::kNEAAnyNumber,
@@ -163,14 +206,13 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 	frameBottomBar->AddFrame(fSaveSpectrumButton, new TGLayoutHints(kLHintsRight, dx));
 	frameBottomBar->AddFrame(fExportImagesButton, new TGLayoutHints(kLHintsRight, dx));
 
-	mainFrame->AddFrame(tabsWithCanvases, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX | kLHintsExpandY, dx, dx, 0, dx));
-	mainFrame->AddFrame(frameBottomBar, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX, dx, dx, 0, dx));
+	this->AddFrame(tabsWithCanvases, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX | kLHintsExpandY, dx, dx, 0, dx));
+	this->AddFrame(frameBottomBar, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX, dx, dx, 0, dx));
 
 	// End UI
-
-	mainFrame->MapSubwindows();
-	mainFrame->Resize(mainFrame->GetDefaultSize());
-	mainFrame->MapWindow();
+	MapSubwindows();
+	Resize(GetDefaultSize());
+	MapWindow();
 }
 
 void TlistProcessorFrame::setButtonsEnabled(Bool_t isEnabled){
@@ -201,7 +243,7 @@ void TlistProcessorFrame::openFileButtonClicked(void){
 
 	fi.fFileTypes = filetypes;
 	fi.fIniDir = StrDup(dir);
-	new TGFileDialog(gClient->GetRoot(), this->mainFrame, kFDOpen, &fi);
+	new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &fi);
 
 	// when obtained the filename - process the file
 	if ((fi.fFilename != NULL) && (strlen(fi.fFilename)>0)){
@@ -247,7 +289,7 @@ void TlistProcessorFrame::processSpectrum(void){
 
 	// Crude calculation of the peak coordinates (based on the bin with maximum count)
 	// DoublePair peakCoordinates = getHistMaxBinCoordinate(hist);
-	if (hist->GetXaxis()->GetXmin() < 0 && hist->GetXaxis()->GetXmax() > 0){
+	if (hist->GetXaxis()->GetXmin() < 10 && hist->GetXaxis()->GetXmax() > 10){
 		e1Mean = 0; //peakCoordinates.first;
 		e2Mean = 0; //peakCoordinates.second;
 	}
@@ -257,7 +299,7 @@ void TlistProcessorFrame::processSpectrum(void){
 	}
 
 	subtractBackground = checkboxSubtractBackground->IsOn();
-	rotateSpectrum = checkboxRotate->IsOn();
+	isRotated = checkboxRotate->IsOn();
 	doRegion = checkboxEnergyRegion->IsOn();
 
 	TAxis* xAxis = hist->GetXaxis();
@@ -269,8 +311,8 @@ void TlistProcessorFrame::processSpectrum(void){
 	if (subtractBackground) {
 		// Get maximum counts in arms
 		std::cout << "Calculating maximum count in arms." << std::endl;
-		const Double_t hiSleeveMaxCount = histProcessor->getHiSleeveMaxCount(hist, rotateSpectrum);
-		const Double_t lowSleeveMaxCount = histProcessor->getLowSleeveMaxCount(hist, rotateSpectrum);
+		const Double_t hiSleeveMaxCount = histProcessor->getHiSleeveMaxCount(hist, isRotated);
+		const Double_t lowSleeveMaxCount = histProcessor->getLowSleeveMaxCount(hist, isRotated);
 		std::cout << "Hi: " << hiSleeveMaxCount << std::endl;
 		std::cout << "Lo: " << lowSleeveMaxCount << std::endl;
 
@@ -281,8 +323,18 @@ void TlistProcessorFrame::processSpectrum(void){
 		Double_t histYmin = hist->GetYaxis()->GetXmin();
 		Double_t histYmax = hist->GetYaxis()->GetXmax();
 
+                // Fix Tomsk problems on the sides
+                if (isRotated){
+                    Double_t d = 1;
+                    histXmin += d;
+                    histXmax -= d;
+                    histYmin += d;
+                    histYmax -= d;
+                }
+                Double_t fwhm = numberResolutionFWHM->GetNumber();
+
 		// Define background function parameter starting values
-		const int npar = 30;
+		const int npar = 31;
 		Double_t f2params[npar] = { hiSleeveMaxCount,					// 0) threeGammaIntE1
 		                            lowSleeveMaxCount,					// 1) comptonIntE1
 		                            hiSleeveMaxCount,					// 2) threeGammaIntE2
@@ -308,19 +360,19 @@ void TlistProcessorFrame::processSpectrum(void){
 		                            0.8,						// 22) g2Int
 		                            histXmin,                                           // 23)
                                             histXmax,                                           // 24)
-		                            histYmin,                                           // 24)
-                                            histYmax,                                           // 25)
-		                            1,							// 25) exclude option - 0) full fit, 1) only ridge sides
-		                            5,							// 26) spectFWHM2
-		                            0.1};						// 27) spectG1Int
-
+		                            histYmin,                                           // 25)
+                                            histYmax,                                           // 26)
+		                            1,							// 27) exclude option - 0) full fit, 1) only ridge sides
+		                            fwhm,						// 28) resolution FWHM
+		                            5,                                                  // 29) spectFWHM2 
+                                            0.1 };                                              // 30) spectG1Int
 		// Define correct background function (rotated or not)
 		bgf2 = (TF2*)gROOT->GetListOfFunctions()->FindObject("bgf2");
 		if (bgf2) delete bgf2;
 
-		bgf2 = rotateSpectrum ?
+		bgf2 = isRotated ?
 			new TF2("bgf2", bgfuncrotate, xAxis->GetXmin(), xAxis->GetXmax(), yAxis->GetXmin(), yAxis->GetXmax(), npar) :
-			new TF2("bgf2", bgfunc, xAxis->GetXmin(), xAxis->GetXmax(), yAxis->GetXmin(), yAxis->GetXmax(), npar); // 501-521
+			new TF2("bgf2", bgfunc,       xAxis->GetXmin(), xAxis->GetXmax(), yAxis->GetXmin(), yAxis->GetXmax(), npar); // 501-521
 
 		// Set background parameter names and limits
 		bgf2->SetParameters(f2params);
@@ -355,7 +407,7 @@ void TlistProcessorFrame::processSpectrum(void){
 
 		bgf2->SetParName(7, "armFWHM2");           // 2nd gauss width in thick arm profile
 		// bgf2->SetParameter(7, 5);
-		bgf2->SetParLimits(7, 2, 12);
+		bgf2->SetParLimits(7, 2, 20);
 
 		bgf2->SetParName(8, "g2Frac");             // 2nd gauss fraction
 		// bgf2->SetParameter(8, 0.01);
@@ -367,7 +419,7 @@ void TlistProcessorFrame::processSpectrum(void){
 
 		bgf2->SetParName(10, "bg24");                    // Descartes quarters II and IV values
 		// bgf2->SetParameter(10, 0.04);
-		bgf2->SetParLimits(10, 0, 0.5);
+		bgf2->SetParLimits(10, 0, 5);
 
 		bgf2->SetParName(11, "bg3");                     // Descartes quarter III value
 		// bgf2->SetParameter(11, 0.21);
@@ -437,19 +489,30 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParameter(27, 1);  // Set range only sides
 		bgf2->SetParLimits(27, 1, 1);  // Set range only sides
 
-		bgf2->SetParName(28, "spectFWHM2");
-		bgf2->SetParameter(28, 5);
-		bgf2->SetParLimits(28, 1, 10);
+		bgf2->SetParName(28, "resolutionFWHM");
+		bgf2->SetParameter(28, fwhm);
+		bgf2->SetParLimits(28, fwhm, fwhm);	
+                
+		bgf2->SetParName(29, "spectFWHM2");
+		bgf2->SetParameter(29, 5);
+		bgf2->SetParLimits(29, 1, 10);
 
-		bgf2->SetParName(29, "spectG1I");
-		bgf2->SetParameter(29, 0.8);
-		bgf2->SetParLimits(29, 1E-4, 1);											// Spect Gauss 1 Int
+		bgf2->SetParName(30, "spectG1I");
+		bgf2->SetParameter(30, 0.8);
+		bgf2->SetParLimits(30, 1E-4, 1);
+                
+                bgf2->SetParName(31, "isRotated");
+		bgf2->SetParameter(31, isRotated);
+		bgf2->SetParLimits(31, 1E-4, 1);
+
+                // Clear convoluted ridge profile
+                convolutionCache.clear();
 
 		// Fit histogram with arms
 		// "S" The result of the fit is returned in the TFitResultPtr
 		// "N" Do not store the graphics function, do not draw
 		// "L" Use Loglikelihood method (default is chisquare method) - deals with zero counts
-		TFitResultPtr r = hist->Fit("bgf2", "S0L");
+                TFitResultPtr r = hist->Fit("bgf2", "S0L");
 
 		// Now we fix first 9 parameters (ridge heights)
 		// for (int a = 0; a < 12; a++){
@@ -483,7 +546,7 @@ void TlistProcessorFrame::processSpectrum(void){
 		}
 
 		// Subtract Fit from histogram
-		histProject = histProcessor->subtractFitFromHist(hist, fittedParams, checkboxRotate->IsOn());
+		histProject = histProcessor->subtractFitFromHist(hist, fittedParams, isRotated);
 
 		// Update approximate peak center coordinates (calculated as maximum bin coordinated) with fitted peak center coordinates
 		e1Mean = myfunc->GetParameter(4);
@@ -498,8 +561,8 @@ void TlistProcessorFrame::processSpectrum(void){
 
 		TF2* peakf2old = (TF2*)gROOT->GetListOfFunctions()->FindObject("peakf2");
 		if (peakf2old) delete peakf2old;
-		peakf2 = rotateSpectrum ?
-			new TF2("peakf2", peakfunc, xAxis->GetXmin(), xAxis->GetXmax(), yAxis->GetXmin(), yAxis->GetXmax(), npar_peakfunc) :
+		peakf2 = isRotated ?
+			new TF2("peakf2", peakfuncrotate, xAxis->GetXmin(), xAxis->GetXmax(), yAxis->GetXmin(), yAxis->GetXmax(), npar_peakfunc) :
 			new TF2("peakf2", peakfunc, xAxis->GetXmin(), xAxis->GetXmax(), yAxis->GetXmin(), yAxis->GetXmax(), npar_peakfunc);
 
 		peakf2->SetParameters(peakparams);
@@ -532,11 +595,11 @@ void TlistProcessorFrame::processSpectrum(void){
 
 	// Projection energy range: 2mc - dEminus < E1+E2 < 2mc + dEplus
 	dEplus = numberPlusEnergy->GetNumber();
-	dEminus = numberMinusEnergy->GetNumber();
+	dEminus = (-1)* numberMinusEnergy->GetNumber();
 
 	// Project 2D histogram and make Doppler spectrum
 	// Here we actually get two 1D spectra - 1) Doppler spectrum 2) How many bins projected in every Doppler histogram bin
-	TH1Pair hists = rotateSpectrum ?
+	TH1Pair hists = isRotated ?
 		histProcessor->projectHistRotated(histProject, e1Mean, e2Mean, dEplus, dEminus, doRegion) :
 		histProcessor->projectHist(histProject, e1Mean, e2Mean, dEplus, dEminus, doRegion);
 	histDoppler = hists.first;
@@ -567,13 +630,16 @@ void TlistProcessorFrame::processSpectrum(void){
 
 	// Draw histograms on correspondent canvases
 	gStyle->SetCanvasPreferGL(kTRUE);
-        const char* drawOption = comboDrawOption->GetSelected()==1 ? "LEGO2" : "SURF2";
+        
+//        const char* drawOption = comboDrawOption->GetSelected()==1 ? "LEGO2" : "SURF2";
+        const char* drawOption = Constants::drawOptions[comboDrawOption->GetSelected()-1].c_str(); 
+        
 	if (subtractBackground) {
-		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), bgf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, rotateSpectrum, drawOption);
-		padsPair2 = GraphicsHelper::drawHist3D(histProject, canvasSubtractedSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, rotateSpectrum, drawOption);
+		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), bgf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
+		padsPair2 = GraphicsHelper::drawHist3D(histProject, canvasSubtractedSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
 	} else {
-		// padsPair1 = drawHist3D(hist, canvasFullSpectrum->GetCanvas(), peakf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, rotateSpectrum, drawOption);
-		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, rotateSpectrum, drawOption);
+		// padsPair1 = drawHist3D(hist, canvasFullSpectrum->GetCanvas(), peakf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, isRotated, drawOption);
+		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
 	}
 
 	// Draw sum number histogram
@@ -619,7 +685,7 @@ void TlistProcessorFrame::updateAxisRange(){
         Double_t e511 = e1Mean > 250 ? 511 : 0;    
 	pad12->cd();
 	if (doRegion){
-            GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, rotateSpectrum);
+            GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, isRotated);
         }
 
 	// Update Canvases
@@ -635,7 +701,7 @@ void TlistProcessorFrame::updateAxisRange(){
 		TPad* pad22 = padsPair2.second;
 		pad22->cd();
 		if (doRegion){
-                    GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, rotateSpectrum);
+                    GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, isRotated);
                 }
 		pad21->Modified();
 		pad22->Modified();
@@ -648,37 +714,73 @@ void TlistProcessorFrame::updateAxisRange(){
 	setButtonsEnabled(kTRUE);
 }
 
+TString* TlistProcessorFrame::getBaseOutputFilename(){
+    TString* s = new TString(AppSettings::instance()->getFilename()->Data());
+    s = StringUtils::stripFileExtension(s);
+    if (checkboxEnergyRegion->IsOn()){
+        *s += TString::Format("%.1f+%.1f", numberMinusEnergy->GetNumber(), numberPlusEnergy->GetNumber()).Data();
+    }
+    if (checkboxSubtractBackground->IsOn()){
+        *s += "-no-bkg";
+    }
+    return s;
+}
+
 void TlistProcessorFrame::exportImagesClicked(){
-	TString* strFileName = AppSettings::instance()->getFilename();
-	TString* onlyFileName = StringUtils::stripFileExtension(strFileName);
-	TString filename1 = TString::Format("%s-hist.png", onlyFileName->Data());
-	GraphicsHelper::saveCanvasToImage(canvasFullSpectrum->GetCanvas(), &filename1);
-	if (subtractBackground) {
-		TString filename2 = TString::Format("%s-hist-no-bg.png", onlyFileName->Data());
-		GraphicsHelper::saveCanvasToImage(canvasSubtractedSpectrum->GetCanvas(), &filename2);
-	}
-	TString filename3 = TString::Format("%s-doppler.png", onlyFileName->Data());
-	GraphicsHelper::saveCanvasToImage(canvasDopplerSpectrum->GetCanvas(), &filename3);
-	// saveCanvasToImage(canvasBinCounts->GetCanvas(), &((new TString(*onlyFileName))->Append("-doppler-sum.png")));
-	ShowOkDialog("TLIST Processor", "Images saved");
+    Int_t currentTab = tabsWithCanvases->GetCurrent();
+    std::cout << "Current tab: " << currentTab << std::endl;
+    tabsWithCanvases->SetTab(0);
+    TString* fileName = getBaseOutputFilename();
+    TString fileNameHist = *fileName + "-hist.png";
+    GraphicsHelper::saveCanvasToImage(canvasFullSpectrum->GetCanvas(), &fileNameHist);
+    if (subtractBackground) {
+        tabsWithCanvases->SetTab(1);
+        TString fileNameSubtract = *fileName + "-subtract.png";        
+        GraphicsHelper::saveCanvasToImage(canvasSubtractedSpectrum->GetCanvas(), &fileNameSubtract);
+    }
+    std::cout << tabsWithCanvases->SetTab(3) << std::endl;
+    TString fileNameDoppler = *fileName + "-doppler.png";
+    GraphicsHelper::saveCanvasToImage(canvasDopplerSpectrum->GetCanvas(), &fileNameDoppler);
+    tabsWithCanvases->SetTab(currentTab);
+    ShowOkDialog("TLIST Processor", "Images saved");
 }
 
 void TlistProcessorFrame::saveSpectrumClicked(){
-	TString* strFileName = AppSettings::instance()->getFilename();
-	TString* onlyFileName = StringUtils::stripFileExtension(strFileName);
-	TString dataFileName = TString::Format("%s-doppler.txt", onlyFileName->Data());
-        HistProcessor* histProcessor = HistProcessor::getInstance();
-	histProcessor->saveHistToFile(histDoppler, dataFileName.Data());
-	TString message = TString::Format("File saved: %s", dataFileName.Data());
-	ShowOkDialog("TLIST Processor", message.Data());
+    TString* fileName = getBaseOutputFilename();
+    std::cout << *fileName << std::endl;
+    TString fileNameDoppler = *fileName + "-cdb.txt";
+    HistProcessor* histProcessor = HistProcessor::getInstance();
+    histProcessor->saveHistToFile(histDoppler, fileNameDoppler.Data());
+    ShowOkDialog("TLIST Processor", "Doppler spectrum saved");
+}
+
+void TlistProcessorFrame::onCheckboxEnergyRegionClicked() {
+    Bool_t doRegion = checkboxEnergyRegion->IsOn();
+    numberMinusEnergy->SetState(doRegion);
+    numberPlusEnergy->SetState(doRegion);
 }
 
 void TlistProcessorFrame::ShowOkDialog(const char* heading, const char* message){
-	int retval;
-	new TGMsgBox(gClient->GetRoot(), this, heading, message, kMBIconAsterisk, kMBOk, &retval);
+    int retval;
+    this->Disconnect("CloseWindow()");
+    this->Connect("CloseWindow()", "TlistProcessorFrame", this, "tryToClose()");        
+    new TGMsgBox(gClient->GetRoot(), this, heading, message, kMBIconAsterisk, kMBOk, &retval);
+    this->Disconnect("CloseWindow()");
+    this->Connect("CloseWindow()", "TlistProcessorFrame", this, "closeWindow()");    
 }
 
+void TlistProcessorFrame::tryToClose(){
+    printf("Can't close the window '%s' : a message box is still open\n", this->GetWindowName());
+}
+
+void TlistProcessorFrame::closeWindow() {
+    std::cout << "TlistProcessorFrame::closeWindow" << std::endl;
+    delete this;
+}
+
+
 TlistProcessorFrame::~TlistProcessorFrame() {
-	mainFrame->Cleanup();
-	delete mainFrame;
+    std::cout << "TlistProcessorFrame::~TlistProcessorFrame" << std::endl;
+    Cleanup();
+    DeleteWindow();
 }

@@ -44,6 +44,7 @@ Contributor(s):
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>AppSettings.h</itemPath>
+      <itemPath>Constants.h</itemPath>
       <itemPath>FittingFunctions.h</itemPath>
       <itemPath>Geometry.h</itemPath>
       <itemPath>GraphicsHelper.h</itemPath>
@@ -60,6 +61,7 @@ Contributor(s):
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>AppSettings.cpp</itemPath>
+      <itemPath>Constants.cpp</itemPath>
       <itemPath>FittingFunctions.cpp</itemPath>
       <itemPath>Geometry.cpp</itemPath>
       <itemPath>GraphicsHelper.cpp</itemPath>
@@ -116,6 +118,10 @@ Contributor(s):
       <item path="AppSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="AppSettings.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Constants.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Constants.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="FittingFunctions.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -180,6 +186,10 @@ Contributor(s):
       <item path="AppSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="AppSettings.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Constants.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Constants.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="FittingFunctions.cpp" ex="false" tool="1" flavor2="0">
       </item>

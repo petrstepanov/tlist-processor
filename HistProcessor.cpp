@@ -37,8 +37,8 @@ ConversionGain HistProcessor::getConversionGain(TH2* hist){
 Double_t HistProcessor::getHiSleeveMaxCount(TH2* hist, Bool_t isRotated){
     Double_t maxCount = 0;
     if (isRotated){
-        for (Int_t binX = 10; binX <= hist->GetXaxis()->GetNbins(); binX++){
-            for (Int_t binY = hist->GetYaxis()->GetNbins()*1/5; binY < hist->GetYaxis()->GetNbins()*2/6; binY++){
+        for (Int_t binX = 10; binX <= hist->GetXaxis()->GetNbins()-10; binX++){
+            for (Int_t binY = 10; binY < hist->GetYaxis()->GetNbins()*1/5; binY++){
                 Double_t count = hist->GetBinContent(binX, binY);
                 if (count > maxCount) maxCount = count;
             }
@@ -57,7 +57,7 @@ Double_t HistProcessor::getHiSleeveMaxCount(TH2* hist, Bool_t isRotated){
 Double_t HistProcessor::getLowSleeveMaxCount(TH2* hist, Bool_t isRotated){
     Double_t maxCount = 0;
     if (isRotated){
-        for (Int_t binX = hist->GetXaxis()->GetNbins()*2/5; binX <= hist->GetXaxis()->GetNbins()*3/5; binX++){
+        for (Int_t binX = 10; binX <= hist->GetXaxis()->GetNbins()-10; binX++){
             for (Int_t binY = hist->GetYaxis()->GetNbins()*4/5; binY < hist->GetYaxis()->GetNbins()-10; binY++){
                 Double_t count = hist->GetBinContent(binX, binY);
                 if (count > maxCount) maxCount = count;
@@ -409,10 +409,7 @@ void HistProcessor::saveHistToFile(TH1* hist, const char* filename) {
 	outputFile.open(filename);
 
 	// Write file header
-	outputFile << "E1-E2 [KeV], "
-		<< "Count"
-		<< std::endl;
-
+	outputFile << "E₁-E₂ keV, " << "Count" << std::endl;
 	for (Int_t bin = 1; bin < 1 + hist->GetNbinsX(); bin++){
 		Double_t dE = hist->GetXaxis()->GetBinCenter(bin);
 		Double_t count = hist->GetBinContent(bin);
@@ -420,4 +417,14 @@ void HistProcessor::saveHistToFile(TH1* hist, const char* filename) {
 			<< count << std::endl;
 	}
 	outputFile.close();
+}
+
+Bool_t HistProcessor::isTomskIssue(TH2* hist) {
+    Double_t sideBinCount = hist->GetBinContent(1, 1);
+    Double_t sleeveBinCount = hist->GetBinContent(20, 20);
+    std::cout << "sideBinCount: " << sideBinCount << ", sleeveBinCount: " << sleeveBinCount << std::endl;
+    if (sideBinCount > 5*sleeveBinCount) {
+        return kTRUE;
+    }
+    return kFALSE;
 }

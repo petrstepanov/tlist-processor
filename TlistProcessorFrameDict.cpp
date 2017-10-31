@@ -39,6 +39,7 @@ namespace std {} using namespace std;
 
 // Header files passed as explicit arguments
 #include "AppSettings.h"
+#include "Constants.h"
 #include "FittingFunctions.h"
 #include "Geometry.h"
 #include "GraphicsHelper.h"
@@ -107,6 +108,7 @@ namespace {
   void TriggerDictionaryInitialization_TlistProcessorFrameDict_Impl() {
     static const char* headers[] = {
 "AppSettings.h",
+"Constants.h",
 "FittingFunctions.h",
 "Geometry.h",
 "GraphicsHelper.h",
@@ -138,6 +140,7 @@ class __attribute__((annotate("$clingAutoload$TlistProcessorFrame.h")))  TlistPr
 
 #define _BACKWARD_BACKWARD_WARNING_H
 #include "AppSettings.h"
+#include "Constants.h"
 #include "FittingFunctions.h"
 #include "Geometry.h"
 #include "GraphicsHelper.h"

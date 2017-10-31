@@ -43,6 +43,7 @@ public:
     TH1Pair projectHistRotated(TH2* hist, Double_t e1Mean, Double_t e2Mean, Double_t dEplus, Double_t dEminus, Bool_t doRegion);
     TH2* readSpectrumFromFile(TString* filename);
     void saveHistToFile(TH1*, const char*);
+    Bool_t isTomskIssue(TH2* hist);
     
 private:
     HistProcessor();                                      // Private so that it can  not be called

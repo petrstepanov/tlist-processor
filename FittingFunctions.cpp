@@ -15,33 +15,60 @@
 #include <TMath.h>
 #include <TF1.h>
 
-//FittingFunctions::FittingFunctions() {
-//}
-//
-//FittingFunctions::FittingFunctions(const FittingFunctions& orig) {
-//}
-//
-//FittingFunctions::~FittingFunctions() {
-//}
+Double_t FWHMtoSigma =  1/TMath::Sqrt(8*TMath::Log(2)); // 0.424661
 
-Double_t FWHMtoSigma =  1/TMath::Sqrt(8*TMath::Log(2));
+std::map<std::pair<Double_t, Double_t>, std::map<Double_t, Double_t>> convolutionCache;
+
+//std::map<std::tuple<Double_t, Double_t, Double_t>, Double_t> convolutionCache;
+
+Double_t convolutedRidgeCache(Double_t x, Double_t* par, Double_t convFWHM){
+    Double_t countHiE  = par[0];
+    Double_t countLowE = par[1];
+
+    // Pull function saved for current set of parameters
+    std::pair<Double_t, Double_t> key (countHiE, countLowE);
+    auto search = convolutionCache.find(key);
+    if(search != convolutionCache.end()) {
+        std::map<Double_t, Double_t> paramsCache = search->second;
+        auto search2 = paramsCache.find(x);
+        if(search2 != paramsCache.end()) {
+            return search2->second;
+        }
+    }
+    
+    // Calculate convoluted value
+    Double_t value = convolutionGauss(ridgeProfile, x, par, convFWHM);
+
+    // Keep calculated value in the memory
+    if(search != convolutionCache.end()) {
+        std::map<Double_t, Double_t> map = search->second;        
+        map.emplace(x,value);
+    }
+    else {
+        std::map<Double_t, Double_t> map;
+        map.emplace(x,value);
+        convolutionCache.emplace(key, map);
+    }
+    return value;
+}
 
 Double_t convolutionGauss(Double_t (*f)(Double_t, Double_t*), Double_t x, Double_t* par, Double_t convFWHM){
     // Control constants
-    Int_t np = 20;          // number of convolution steps
+//    Int_t np = 20;          // number of convolution steps
     Double_t sc = 4.0;      // convolution extends to +-sc Gaussian sigmas (5?
 
     // Range of convolution integrals
     Double_t eLow = x - sc * convFWHM * FWHMtoSigma;
     Double_t eUpp = x + sc * convFWHM * FWHMtoSigma;
 
-    Double_t step = (eUpp-eLow) / np;
-
+    Double_t step = 0.15; //(eUpp-eLow) / np;
     Double_t sum = 0;
+
     // Convolution integral of Background and Gaussian by sum
     for (Double_t e = eLow; e <= eUpp; e += step) {
         sum += (*f)(e, par) * TMath::Gaus(x-e,0,convFWHM * FWHMtoSigma, kTRUE) * step;
     }
+
     return sum;
 }
 
@@ -75,8 +102,8 @@ Double_t orePowell(Double_t e, Double_t mc2){
 }
 
 Double_t ridgeProfile(Double_t e, Double_t* par){
-	Double_t comptonInt    = par[0];
-	Double_t threeGammaInt = par[1];
+	Double_t countHiE  = par[0];
+	Double_t countLowE = par[1];
 //	Double_t lowExpContrib = par[2];
 //	Double_t lowExpStretch = par[3];
 //	Double_t hiExpContrib  = par[4];
@@ -84,11 +111,12 @@ Double_t ridgeProfile(Double_t e, Double_t* par){
 	Double_t mc2 = par[6];
 
 	// Coincidence with Compton scattered gamma-ray
-	Double_t ridge = comptonInt;
+	Double_t ridge = countHiE;
 
 	// Three-gamma annihilation contribution
 	if (e < mc2){
-		ridge += orePowell(e, mc2) * threeGammaInt;
+		ridge += countLowE;
+//		ridge += orePowell(e, mc2) * threeGammaInt;
 	}
 
 	// Exponential tail due to pile-up, 
@@ -105,10 +133,10 @@ Double_t ridgeProfile(Double_t e, Double_t* par){
 }
 
 Double_t bgfunc(Double_t *x, Double_t *par) {
-    Double_t threeGammaIntE1 = par[0];
-    Double_t comptonIntE1 = par[1];
-    Double_t threeGammaIntE2 = par[2];
-    Double_t comptonIntE2 = par[3];
+    Double_t countLowE1 = par[0]; // Ridge count for E1 < 511
+    Double_t countHiE1 = par[1];  // Ridge count for E1 > 511
+    Double_t countLowE2 = par[2];
+    Double_t countHiE2 = par[3];
     Double_t meanE1 = par[4];
     Double_t meanE2 = par[5];
     Double_t armFWHM1 = par[6];
@@ -133,7 +161,8 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     Double_t yMin = par[25];
     Double_t yMax = par[26];
     Int_t fitRegion = par[27];
-
+    Double_t resolutionFWHM = par[28];
+    
     Double_t _x = x[0], _y = x[1];
     Double_t mc2 = meanE1 > 250 ? 511 : 0;
 
@@ -153,7 +182,7 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
             break;
         }
         case 2: {   //all but the peak
-            if (_y < -_x + 2*mc2 - spectHalfWidth && _y > -_x + 2*mc2 + spectHalfWidth){
+            if (_y < -_x + 2*mc2 + spectHalfWidth && _y > -_x + 2*mc2 - spectHalfWidth){
                     TF1::RejectPoint();
                     // return 0;
             }
@@ -163,16 +192,17 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     }
 
     // Ridge profiles
-    Double_t ridge1Par[7] = {comptonIntE1, threeGammaIntE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
+    Double_t ridge1Par[7] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
     Double_t ridgeAlongE1 = (TMath::Gaus(_y, meanE2, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_y, meanE2, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
 //                          * ridgeProfile(_x, ridge1Par);
-                          * convolutionGauss(ridgeProfile, _x, ridge1Par, 1.7);
+//                          * convolutedRidgeCache(_x, ridge1Par, resolutionFWHM);
+                            * convolutionGauss(ridgeProfile, _x, ridge1Par, resolutionFWHM);            
 
-    Double_t ridge2Par[7] = {comptonIntE2, threeGammaIntE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
+    Double_t ridge2Par[7] = {countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
     Double_t ridgeAlongE2 = (TMath::Gaus(_x, meanE1, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_x, meanE1, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
 //                          * ridgeProfile(_y, ridge2Par);
-                          * convolutionGauss(ridgeProfile, _y, ridge2Par, 1.7);
-
+//                          * convolutedRidgeCache(_y, ridge2Par, resolutionFWHM);
+                            * convolutionGauss(ridgeProfile, _y, ridge2Par, resolutionFWHM);
     Double_t returnVal = ridgeAlongE1 + ridgeAlongE2;
 
     // Descartes Plane 1
@@ -191,11 +221,115 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     return returnVal;
 }
 
+Double_t bgfuncrotate(Double_t *x, Double_t *par){
+    const Int_t cutCenterStripeWidth = 5;
+    
+    Double_t countLowE1 = par[0]; // Ridge count for E1 < 511
+    Double_t countHiE1 = par[1];  // Ridge count for E1 > 511
+    Double_t countLowE2 = par[2];
+    Double_t countHiE2 = par[3];
+    Double_t meanE1 = par[4];
+    Double_t meanE2 = par[5];
+    Double_t armFWHM1 = par[6];
+    Double_t armFWHM2 = par[7];
+    Double_t secondGaussFraction = par[8];
+    Double_t bg1 = par[9];
+    Double_t bg24 = par[10];
+    Double_t bg3 = par[11];
+    Double_t lowExpStretch = par[12];
+    Double_t hiExpStretch = par[13];
+    Double_t lowExpContrib = par[14];
+    Double_t hiExpContrib = par[15];
+    // Double_t FWHM1 = par[16];
+    // Double_t FWHM2 = par[17];
+    // Double_t FWHM3 = par[18];
+    // Double_t spectFWHM = par[19];
+    // Double_t maxCount = par[20];
+    // Double_t g1Int = par[21];
+    // Double_t g2Int = par[22];
+    Double_t xMin = par[23];
+    Double_t xMax = par[24];
+    Double_t yMin = par[25];
+    Double_t yMax = par[26];
+    Int_t fitRegion = par[27];
+    Double_t resolutionFWHM = par[28];
+    
+    Double_t _x = x[0], _y = x[1];
+    Double_t mc2 = meanE1 > 250 ? 511 : 0;
+    
+    // Cut artefacts on the histogram borders (like on Fe spectrum)
+    if (_x < xMin || _x > xMax){
+            TF1::RejectPoint();
+            // return 0;
+    }
+    if (_y < yMin || _y > yMax){
+            TF1::RejectPoint();
+            // return 0;
+    }    
+    
+    Int_t borderWidth = 2;
+    Int_t spectHalfWidth = 5;
+    switch(fitRegion){
+        case 1: {   // only sides 
+            Double_t r = (xMin-mc2)*TMath::Sqrt2()*4/5;
+            if ((_x-mc2)*(_x-mc2) + (_y-mc2)*(_y-mc2) < r*r){
+                    TF1::RejectPoint();
+                    // return 0;
+            } 
+            break;
+        }
+        case 2: {   //all but the peak
+            if (_y > -spectHalfWidth/TMath::Sqrt2() && _y < spectHalfWidth/TMath::Sqrt2()){
+                    TF1::RejectPoint();
+                    // return 0;
+            }   
+            break;
+        }
+        default: break;
+    }
+
+    // return rotated bg function
+    Double_t x_rotate[2];
+    Double_t theta = -0.785398; // 45 degrees clockwise rotated
+    x_rotate[0] = x[0] * cos(theta) - x[1] * sin(theta);
+    x_rotate[1] = x[0] * sin(theta) + x[1] * cos(theta);
+    _x = x_rotate[0];
+    _y = x_rotate[1];
+    // Ridge profiles
+    Double_t ridge1Par[7] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
+    Double_t ridgeAlongE1 = (TMath::Gaus(_y, meanE2, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_y, meanE2, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
+//                          * ridgeProfile(_x, ridge1Par);
+//                          * convolutedRidgeCache(_x, ridge1Par, resolutionFWHM);
+                            * convolutionGauss(ridgeProfile, _x, ridge1Par, resolutionFWHM);            
+
+    Double_t ridge2Par[7] = {countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
+    Double_t ridgeAlongE2 = (TMath::Gaus(_x, meanE1, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_x, meanE1, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
+//                          * ridgeProfile(_y, ridge2Par);
+//                          * convolutedRidgeCache(_y, ridge2Par, resolutionFWHM);
+                            * convolutionGauss(ridgeProfile, _y, ridge2Par, resolutionFWHM);
+    Double_t returnVal = ridgeAlongE1 + ridgeAlongE2;
+
+    // Descartes Plane 1
+    if (_x >= meanE1 && _y >= meanE2){
+        returnVal += bg1;
+    }
+    // Descartes Plane 2 & 4
+    else if ((_x >= meanE1 && _y < meanE2) || (_x < meanE1 && _y >= meanE2)){
+        returnVal += bg24;
+    }
+    // Descartes Plane 3
+    else {
+        returnVal += bg3;
+    }
+
+    return returnVal;     
+}
+
 Double_t spectfunc(Double_t *x, Double_t *par){
-    Double_t threeGammaIntE1 = par[0];
-    Double_t comptonIntE1 = par[1];
-    Double_t threeGammaIntE2 = par[2];
-    Double_t comptonIntE2 = par[3];
+    Double_t countLowE1 = par[0];
+    Double_t countHiE1 = par[1];
+    Double_t countLowE2 = par[2];
+    Double_t countHiE2 = par[3];
     Double_t meanE1 = par[4];
     Double_t meanE2 = par[5];
     Double_t armFWHM1 = par[6];
@@ -242,38 +376,6 @@ Double_t spectfunc(Double_t *x, Double_t *par){
     return returnVal;
 }
 
-Double_t bgfuncrotate(Double_t *x, Double_t *par){
-    const Int_t cutCenterStripeWidth = 5;
-    
-    Double_t meanE1 = par[4];
-    Double_t center = (meanE1 < 200) ? 0 : 510.7;
-    // Exclude horizontal doppler stripe of a width cutCenterStripeWidth
-    if (std::abs(x[1]-center) < cutCenterStripeWidth/2){
-            TF1::RejectPoint();
-            // return 0;
-    }
-    // Cut artefacts on the histogram borders (like on Fe spectrum)
-    Double_t histXlength = par[16];
-    Double_t histYlength = par[17];
-    // Cut along X axis
-    if (std::abs(x[1]-center) > (histYlength/2)*0.95){
-            TF1::RejectPoint();
-            // return 0;
-    }
-    // Cut along Y axis
-    if (std::abs(x[0]-center) > (histXlength/2)*0.95){
-            TF1::RejectPoint();
-            // return 0;
-    }
-
-    // return rotated bg function
-    Double_t x_rotate[2];
-    Double_t theta = -0.785398; // 45 degrees clockwise rotated
-    x_rotate[0] = x[0] * cos(theta) - x[1] * sin(theta);
-    x_rotate[1] = x[0] * sin(theta) + x[1] * cos(theta);
-    return bgfunc(x_rotate, par);
-}
-
 Double_t peakfunc(Double_t *x, Double_t *par){
 	Double_t meanE1 = par[0];
 	Double_t meanE2 = par[1];
@@ -301,4 +403,28 @@ Double_t peakfunc(Double_t *x, Double_t *par){
 	Double_t _y = meanE2 + x_rotate[1];
 
 	return TMath::Gaus(_x, meanE1, FWHMres / 2.3548) * TMath::Gaus(_y, meanE2, spectFWHM / 2.3548) * maxCount;
+}
+
+Double_t peakfuncrotate(Double_t *x, Double_t *par){
+	Double_t meanE1 = par[0];
+	Double_t meanE2 = par[1];
+	Double_t spectFWHM = par[2];
+	Double_t FWHMres = par[3];
+	Double_t maxCount = par[4];
+	Double_t center = (meanE1 < 200) ? 0 : 510.7;
+
+	// Exclude points from fit
+	if ((x[0]-center)*(x[0]-center) + (x[1]-center)*(x[1]-center) > 2*2){
+		TF1::RejectPoint();
+		// return 0;
+	}
+	if (x[1]<-x[0]+2*center-1.5 || x[1]>-x[0]+2*center+1.5){
+		TF1::RejectPoint();
+		// return 0;
+	}
+
+	// Add annihilation peak
+	Double_t _x = meanE1 + x[0];
+	Double_t _y = meanE2 + x[1];
+	return TMath::Gaus(_y, meanE2, FWHMres / 2.3548) * TMath::Gaus(_x, meanE1, spectFWHM / 2.3548) * maxCount;
 }

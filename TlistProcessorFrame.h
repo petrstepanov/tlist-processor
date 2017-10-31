@@ -24,12 +24,12 @@
 #include <TRootEmbeddedCanvas.h>
 #include <TH2.h>
 #include <TF2.h>
+#include <TString.h>
 #include <TMath.h>
 #include <TCanvas.h>
 #include <TStopwatch.h>
 #include <TPaveText.h>
 #include <TGMsgBox.h>
-#include "FittingFunctions.h"
 #include "GraphicsHelper.h"
 #include "StringUtils.h"
 
@@ -38,9 +38,10 @@ typedef std::pair<TH1*, TH1*> TH1Pair;
 
 class TlistProcessorFrame : public TGMainFrame {
 private:
-    TGMainFrame* mainFrame;
+//    TGMainFrame* mainFrame;
     TGNumberEntry* numberMinusEnergy;
     TGNumberEntry* numberPlusEnergy;
+    TGNumberEntry* numberResolutionFWHM;
     TGNumberEntry* fLynx1Emin;
     TGNumberEntry* fLynx1Emax;
     TGNumberEntry* iLynx1Bins;
@@ -75,7 +76,6 @@ private:
     Double_t dEminus;
     Bool_t isRotated;
     Bool_t subtractBackground;
-    Bool_t rotateSpectrum;
     Bool_t doRegion;
 
     TH2* hist;
@@ -99,6 +99,10 @@ public:
     void saveSpectrumClicked();
     void ShowOkDialog(const char*, const char*);
     void setButtonsEnabled(Bool_t);
+    void onCheckboxEnergyRegionClicked();
+    TString* getBaseOutputFilename();
+    void tryToClose();
+    void closeWindow();
     virtual ~TlistProcessorFrame();
     
 //  #if defined(__ROOTCLING__)

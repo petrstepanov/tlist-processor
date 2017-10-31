@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/AppSettings.o \
+	${OBJECTDIR}/Constants.o \
 	${OBJECTDIR}/FittingFunctions.o \
 	${OBJECTDIR}/Geometry.o \
 	${OBJECTDIR}/GraphicsHelper.o \
@@ -75,6 +76,11 @@ ${OBJECTDIR}/AppSettings.o: AppSettings.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/AppSettings.o AppSettings.cpp
+
+${OBJECTDIR}/Constants.o: Constants.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Constants.o Constants.cpp
 
 ${OBJECTDIR}/FittingFunctions.o: FittingFunctions.cpp
 	${MKDIR} -p ${OBJECTDIR}
