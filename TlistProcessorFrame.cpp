@@ -104,7 +104,7 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
             latex->SetTextSize(14);
             latex->SetTextAlign(13);  //align at top
             latex->DrawLatex(0, 0.9, "< E_{1} + E_{2} #minus 2mc^{2} <");
-            frameMiddleBar->AddFrame(trec, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, dx, 1));
+            frameMiddleBar->AddFrame(trec, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 0, 1));
             trec->GetCanvas()->SetEditable(kFALSE);
         }
         
@@ -431,15 +431,15 @@ void TlistProcessorFrame::processSpectrum(void){
 
 		bgf2->SetParName(13, "hiExpStr");            // Atan horizontal stretch coefficient
 		bgf2->SetParameter(13, 10);
-		bgf2->SetParLimits(13, 1, 100);											// Hi Exp Stretch
+		bgf2->SetParLimits(13, 10, 10);											// Hi Exp Stretch
 
 		bgf2->SetParName(14, "loExpContr");            // Three Gauss Amplitude
-		bgf2->SetParameter(14, 0.1);
-		bgf2->SetParLimits(14, 0, 10);											// Lo Exp Contribution
+		bgf2->SetParameter(14, 1);
+		bgf2->SetParLimits(14, 0.01, 20);											// Lo Exp Contribution
 
 		bgf2->SetParName(15, "hiExpContr");            // Three Gauss Amplitude
-		bgf2->SetParameter(15, 0.1);
-		bgf2->SetParLimits(15, 0, 10);											// Hi Exp Contribution
+		bgf2->SetParameter(15, 1);
+		bgf2->SetParLimits(15, 0.01, 20);											// Hi Exp Contribution
 
 		bgf2->SetParName(16, "FWHM1");
 		bgf2->SetParameter(16, 2);
@@ -486,8 +486,8 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParLimits(26, histYmax, histYmax);                 
 
 		bgf2->SetParName(27, "fitRange");
-		bgf2->SetParameter(27, 1);  // Set range only sides
-		bgf2->SetParLimits(27, 1, 1);  // Set range only sides
+		bgf2->SetParameter(27, 2);  // Set range only sides
+		bgf2->SetParLimits(27, 2, 2);  // Set range only sides
 
 		bgf2->SetParName(28, "resolutionFWHM");
 		bgf2->SetParameter(28, fwhm);

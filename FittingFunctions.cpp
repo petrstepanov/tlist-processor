@@ -104,9 +104,9 @@ Double_t orePowell(Double_t e, Double_t mc2){
 Double_t ridgeProfile(Double_t e, Double_t* par){
 	Double_t countHiE  = par[0];
 	Double_t countLowE = par[1];
-//	Double_t lowExpContrib = par[2];
-//	Double_t lowExpStretch = par[3];
-//	Double_t hiExpContrib  = par[4];
+	Double_t lowExpContrib = par[2];
+	Double_t lowExpStretch = par[3];
+	Double_t hiExpContrib  = par[4];
 //	Double_t hiExpStretch  = par[5];
 	Double_t mc2 = par[6];
 
@@ -115,10 +115,13 @@ Double_t ridgeProfile(Double_t e, Double_t* par){
 
 	// Three-gamma annihilation contribution
 	if (e < mc2){
-		ridge += countLowE;
-//		ridge += orePowell(e, mc2) * threeGammaInt;
+            ridge += countLowE;
+            ridge += TMath::Exp((e-mc2)/lowExpStretch) * countLowE * lowExpContrib;
+            // ridge += orePowell(e, mc2) * threeGammaInt;
 	}
-
+        if (e >= mc2){
+            ridge += TMath::Exp(-(e-mc2)/lowExpStretch) * countHiE * hiExpContrib;
+        }
 	// Exponential tail due to pile-up, 
 //        if (e >= mc2){
 //                ridge += exp(-(e-mc2)/hiExpStretch) * hiExpContrib * comptonInt;
@@ -168,7 +171,7 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
 
     // Fit region 
     Int_t borderWidth = 2;
-    Int_t spectHalfWidth = 5;
+    Int_t spectHalfWidth = 8;
     switch(fitRegion){
         case 1: {   // only sides 
             if (_x > xMin + borderWidth && _x < xMax - borderWidth && _y > yMin + borderWidth && _y < yMax - borderWidth){
@@ -182,9 +185,9 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
             break;
         }
         case 2: {   //all but the peak
-            if (_y < -_x + 2*mc2 + spectHalfWidth && _y > -_x + 2*mc2 - spectHalfWidth){
+            if (_y < -_x + 2*mc2 + spectHalfWidth && _y > -_x + 2*mc2 - spectHalfWidth -1.5){
                     TF1::RejectPoint();
-                    // return 0;
+//                     return 0;
             }
             break;
         }
