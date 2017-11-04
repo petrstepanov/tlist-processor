@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   TlistProcessorFrame.cpp
  * Author: petrstepanov
- * 
+ *
  * Created on July 28, 2017, 7:49 PM
  */
 
@@ -33,7 +33,9 @@
 #include "FittingFunctions.h"
 #include "HistProcessor.h"
 #include "TlistProcessorFrame.h"
-#include "TlistProcessorFrameLinkDef.h"
+#include "LinkDef.h"
+
+ClassImp(TlistProcessorFrame)
 
 TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 //	mainFrame = new TGMainFrame(p, w, h, kMainFrame | kVerticalFrame);
@@ -58,18 +60,18 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 
 	// Rotation checkbox
 	checkboxRotate = new TGCheckButton(frameTopBar, "45 degree rotation");
-	frameTopBar->AddFrame(checkboxRotate, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));        
-        
+	frameTopBar->AddFrame(checkboxRotate, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));
+
 	// Filename
 	labelFilename = new TGLabel(frameTopBar, "");
 	labelFilename->SetTextJustify(kTextRight | kTextTop);
-	frameTopBar->AddFrame(labelFilename, new TGLayoutHints(kLHintsLeft | kLHintsExpandX, dx, 0, 3, 0));        
+	frameTopBar->AddFrame(labelFilename, new TGLayoutHints(kLHintsLeft | kLHintsExpandX, dx, 0, 3, 0));
 
 	this->AddFrame(frameTopBar, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX, dx, dx, dx, dx));
 
         // Separator
         this->AddFrame(new TGHorizontal3DLine(this), new TGLayoutHints(kLHintsExpandX, dx, dx));
-        
+
 	// MIDDLE TOOLBAR
 	// Project button
 	buttonProcessSpectrum = new TGTextButton(frameMiddleBar, "Process Spectrum");
@@ -84,7 +86,7 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 	numberMinusEnergy = new TGNumberEntry(frameMiddleBar, -3.3, 4, -1, TGNumberFormat::kNESRealOne,
 		TGNumberFormat::kNEAAnyNumber,
 		TGNumberFormat::kNELLimitMax, 0);
-        
+
 //	TGLabel* labelE1E2 = new TGLabel(frameMiddleBar, "< E1 + E2 - 2mc^2 <");
 	numberPlusEnergy = new TGNumberEntry(frameMiddleBar, 1.7, 3, -1, TGNumberFormat::kNESRealOne,
 		TGNumberFormat::kNEANonNegative,
@@ -96,7 +98,7 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
             TColor *c = new TColor(colorIndex, 0.906, 0.906, 0.906); // grey canvas background color
             TRootEmbeddedCanvas* trec = new TRootEmbeddedCanvas("trec", frameMiddleBar, 113, 20, 0);
             trec->GetCanvas()->cd();
-            trec->GetCanvas()->SetFillColor(colorIndex);      
+            trec->GetCanvas()->SetFillColor(colorIndex);
             TLatex* latex = new TLatex();
             Double_t fontnumber = 4; // helvetica-medium-r-normal  "Arial"
             Int_t precision = 3;     // Text size is given in pixels
@@ -107,7 +109,7 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
             frameMiddleBar->AddFrame(trec, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 0, 1));
             trec->GetCanvas()->SetEditable(kFALSE);
         }
-        
+
 	frameMiddleBar->AddFrame(numberMinusEnergy, new TGLayoutHints(kLHintsRight, 0, dx, 1, 0));
 	frameMiddleBar->AddFrame(checkboxEnergyRegion, new TGLayoutHints(kLHintsRight, 0, 0, 3, 0));
 
@@ -120,15 +122,15 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 	frameMiddleBar->AddFrame(checkboxSubtractBackground, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 3, 0));
 	checkboxSubtractBackground->SetOn();
 
-        // Resolution 
+        // Resolution
 	frameMiddleBar->AddFrame(new TGLabel(frameMiddleBar, "Detector FWHM, keV"), new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 4));
 	numberResolutionFWHM = new TGNumberEntry(frameMiddleBar, 1.0, 3, -1, TGNumberFormat::kNESRealOne,
 		TGNumberFormat::kNEAPositive,
 		TGNumberFormat::kNELLimitMin, 0);
 	frameMiddleBar->AddFrame(numberResolutionFWHM, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx));
 //	frameMiddleBar->AddFrame(new TGLabel(frameMiddleBar, "keV"), new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 4));
-        
-        
+
+
 	// Add Bars
 	this->AddFrame(frameMiddleBar, new TGLayoutHints(kLHintsExpandX | kLHintsTop, dx, dx, dx, dx));
 
@@ -165,14 +167,14 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
         comboDrawOption = new TGComboBox(frameBottomBar, 0);
         frameBottomBar->AddFrame(comboDrawOption, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, 3*dx));
         Int_t i = 0;
-        std::for_each(std::begin(Constants::drawOptions), 
-                      std::end(Constants::drawOptions), 
+        std::for_each(std::begin(Constants::drawOptions),
+                      std::end(Constants::drawOptions),
                       [&](std::string const &str) {
-            comboDrawOption->AddEntry(str.c_str(),++i);            
-        });  
+            comboDrawOption->AddEntry(str.c_str(),++i);
+        });
 	comboDrawOption->Select(1);
 	comboDrawOption->Resize(75, 20);
-        
+
 	TGLabel* fDisplayLabel = new TGLabel(frameBottomBar, "Display Range");
 	fDisplayLabel->SetTextJustify(kTextLeft);
 	numberDisplayMin = new TGNumberEntry(frameBottomBar, 511 - defaultDisplayOffset, 3, -1, TGNumberFormat::kNESInteger,
@@ -364,7 +366,7 @@ void TlistProcessorFrame::processSpectrum(void){
                                             histYmax,                                           // 26)
 		                            1,							// 27) exclude option - 0) full fit, 1) only ridge sides
 		                            fwhm,						// 28) resolution FWHM
-		                            5,                                                  // 29) spectFWHM2 
+		                            5,                                                  // 29) spectFWHM2
                                             0.1 };                                              // 30) spectG1Int
 		// Define correct background function (rotated or not)
 		bgf2 = (TF2*)gROOT->GetListOfFunctions()->FindObject("bgf2");
@@ -472,18 +474,18 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParName(23, "histXmin");
 		bgf2->SetParameter(23, histXmin);
 		bgf2->SetParLimits(23, histXmin, histXmin);
-                
+
 		bgf2->SetParName(24, "histXmax");
 		bgf2->SetParameter(24, histXmax);
-		bgf2->SetParLimits(24, histXmax, histXmax);                
+		bgf2->SetParLimits(24, histXmax, histXmax);
 
 		bgf2->SetParName(25, "histYmin");
 		bgf2->SetParameter(25, histYmin);
 		bgf2->SetParLimits(25, histYmin, histYmin);
-                
+
 		bgf2->SetParName(26, "histYmax");
 		bgf2->SetParameter(26, histYmax);
-		bgf2->SetParLimits(26, histYmax, histYmax);                 
+		bgf2->SetParLimits(26, histYmax, histYmax);
 
 		bgf2->SetParName(27, "fitRange");
 		bgf2->SetParameter(27, 2);  // Set range only sides
@@ -491,8 +493,8 @@ void TlistProcessorFrame::processSpectrum(void){
 
 		bgf2->SetParName(28, "resolutionFWHM");
 		bgf2->SetParameter(28, fwhm);
-		bgf2->SetParLimits(28, fwhm, fwhm);	
-                
+		bgf2->SetParLimits(28, fwhm, fwhm);
+
 		bgf2->SetParName(29, "spectFWHM2");
 		bgf2->SetParameter(29, 5);
 		bgf2->SetParLimits(29, 1, 10);
@@ -500,7 +502,7 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParName(30, "spectG1I");
 		bgf2->SetParameter(30, 0.8);
 		bgf2->SetParLimits(30, 1E-4, 1);
-                
+
                 bgf2->SetParName(31, "isRotated");
 		bgf2->SetParameter(31, isRotated);
 		bgf2->SetParLimits(31, 1E-4, 1);
@@ -630,10 +632,10 @@ void TlistProcessorFrame::processSpectrum(void){
 
 	// Draw histograms on correspondent canvases
 	gStyle->SetCanvasPreferGL(kTRUE);
-        
+
 //        const char* drawOption = comboDrawOption->GetSelected()==1 ? "LEGO2" : "SURF2";
-        const char* drawOption = Constants::drawOptions[comboDrawOption->GetSelected()-1].c_str(); 
-        
+        const char* drawOption = Constants::drawOptions[comboDrawOption->GetSelected()-1].c_str();
+
 	if (subtractBackground) {
 		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), bgf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
 		padsPair2 = GraphicsHelper::drawHist3D(histProject, canvasSubtractedSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
@@ -682,7 +684,7 @@ void TlistProcessorFrame::updateAxisRange(){
 
 	Double_t dEplus = numberPlusEnergy->GetNumber();
 	Double_t dEminus = numberMinusEnergy->GetNumber();
-        Double_t e511 = e1Mean > 250 ? 511 : 0;    
+        Double_t e511 = e1Mean > 250 ? 511 : 0;
 	pad12->cd();
 	if (doRegion){
             GraphicsHelper::drawHistSumRegion(min, max, min, max, e511, e511, dEplus, dEminus, isRotated);
@@ -735,7 +737,7 @@ void TlistProcessorFrame::exportImagesClicked(){
     GraphicsHelper::saveCanvasToImage(canvasFullSpectrum->GetCanvas(), &fileNameHist);
     if (subtractBackground) {
         tabsWithCanvases->SetTab(1);
-        TString fileNameSubtract = *fileName + "-subtract.png";        
+        TString fileNameSubtract = *fileName + "-subtract.png";
         GraphicsHelper::saveCanvasToImage(canvasSubtractedSpectrum->GetCanvas(), &fileNameSubtract);
     }
     std::cout << tabsWithCanvases->SetTab(3) << std::endl;
@@ -763,10 +765,10 @@ void TlistProcessorFrame::onCheckboxEnergyRegionClicked() {
 void TlistProcessorFrame::ShowOkDialog(const char* heading, const char* message){
     int retval;
     this->Disconnect("CloseWindow()");
-    this->Connect("CloseWindow()", "TlistProcessorFrame", this, "tryToClose()");        
+    this->Connect("CloseWindow()", "TlistProcessorFrame", this, "tryToClose()");
     new TGMsgBox(gClient->GetRoot(), this, heading, message, kMBIconAsterisk, kMBOk, &retval);
     this->Disconnect("CloseWindow()");
-    this->Connect("CloseWindow()", "TlistProcessorFrame", this, "closeWindow()");    
+    this->Connect("CloseWindow()", "TlistProcessorFrame", this, "closeWindow()");
 }
 
 void TlistProcessorFrame::tryToClose(){

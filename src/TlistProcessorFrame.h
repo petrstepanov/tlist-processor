@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   TlistProcessorFrame.h
  * Author: petrstepanov
  *
@@ -82,12 +82,12 @@ private:
     TH1* histDoppler;
     TH1* histSumNumber;
     TH2* histProject;
-    
+
     TF2* bgf2;
     TF2* peakf2;
     TPadPair padsPair1;
     TPadPair padsPair2;
-    
+
 public:
     TlistProcessorFrame(const TGWindow*, UInt_t, UInt_t);
     void openFileButtonClicked(void);
@@ -104,11 +104,8 @@ public:
     void tryToClose();
     void closeWindow();
     virtual ~TlistProcessorFrame();
-    
-//  #if defined(__ROOTCLING__)
-//    ClassDef(TListProcessorFrame, 1);
-//  #endif
+
+    ClassDef(TlistProcessorFrame, 0);
 };
 
 #endif /* TLISTPROCESSORFRAME_H */
-
