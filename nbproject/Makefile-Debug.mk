@@ -112,10 +112,10 @@ ${OBJECTDIR}/src/TlistProcessorFrame.o: src/TlistProcessorFrame.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/TlistProcessorFrame.o src/TlistProcessorFrame.cpp
 
-${OBJECTDIR}/src/main.o: src/main.cc
+${OBJECTDIR}/src/main.o: src/main.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main.o src/main.cc
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main.o src/main.cpp
 
 # Subprojects
 .build-subprojects:

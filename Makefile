@@ -100,7 +100,7 @@ MYSOURCES=src/AppSettings.cpp \
           src/HistProcessor.cpp \
           src/StringUtils.cpp \
           src/TlistProcessorFrame.cpp \
-	  src/main.cc
+	  src/main.cpp
 
 # build
 build: .build-post
