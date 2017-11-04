@@ -43,15 +43,15 @@ Contributor(s):
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>AppSettings.h</itemPath>
-      <itemPath>Constants.h</itemPath>
-      <itemPath>FittingFunctions.h</itemPath>
-      <itemPath>Geometry.h</itemPath>
-      <itemPath>GraphicsHelper.h</itemPath>
-      <itemPath>HistProcessor.h</itemPath>
-      <itemPath>StringUtils.h</itemPath>
-      <itemPath>TlistProcessorFrame.h</itemPath>
-      <itemPath>TlistProcessorFrameLinkDef.h</itemPath>
+      <itemPath>src/AppSettings.h</itemPath>
+      <itemPath>src/Constants.h</itemPath>
+      <itemPath>src/FittingFunctions.h</itemPath>
+      <itemPath>src/Geometry.h</itemPath>
+      <itemPath>src/GraphicsHelper.h</itemPath>
+      <itemPath>src/HistProcessor.h</itemPath>
+      <itemPath>src/StringUtils.h</itemPath>
+      <itemPath>src/TlistProcessorFrame.h</itemPath>
+      <itemPath>src/TlistProcessorFrameLinkDef.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -60,15 +60,15 @@ Contributor(s):
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>AppSettings.cpp</itemPath>
-      <itemPath>Constants.cpp</itemPath>
-      <itemPath>FittingFunctions.cpp</itemPath>
-      <itemPath>Geometry.cpp</itemPath>
-      <itemPath>GraphicsHelper.cpp</itemPath>
-      <itemPath>HistProcessor.cpp</itemPath>
-      <itemPath>StringUtils.cpp</itemPath>
-      <itemPath>TlistProcessorFrame.cpp</itemPath>
-      <itemPath>main.cc</itemPath>
+      <itemPath>src/AppSettings.cpp</itemPath>
+      <itemPath>src/Constants.cpp</itemPath>
+      <itemPath>src/FittingFunctions.cpp</itemPath>
+      <itemPath>src/Geometry.cpp</itemPath>
+      <itemPath>src/GraphicsHelper.cpp</itemPath>
+      <itemPath>src/HistProcessor.cpp</itemPath>
+      <itemPath>src/StringUtils.cpp</itemPath>
+      <itemPath>src/TlistProcessorFrame.cpp</itemPath>
+      <itemPath>src/main.cc</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -115,41 +115,41 @@ Contributor(s):
           <commandLine>-lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lpthread -stdlib=libc++ -lm -ldl -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili</commandLine>
         </linkerTool>
       </compileType>
-      <item path="AppSettings.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/AppSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="AppSettings.h" ex="false" tool="3" flavor2="0">
+      <item path="src/AppSettings.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Constants.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/Constants.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Constants.h" ex="false" tool="3" flavor2="0">
+      <item path="src/Constants.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="FittingFunctions.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/FittingFunctions.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="FittingFunctions.h" ex="false" tool="3" flavor2="0">
+      <item path="src/FittingFunctions.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Geometry.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/Geometry.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Geometry.h" ex="false" tool="3" flavor2="0">
+      <item path="src/Geometry.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="GraphicsHelper.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/GraphicsHelper.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="GraphicsHelper.h" ex="false" tool="3" flavor2="0">
+      <item path="src/GraphicsHelper.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="HistProcessor.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/HistProcessor.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="HistProcessor.h" ex="false" tool="3" flavor2="0">
+      <item path="src/HistProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="StringUtils.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/StringUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="StringUtils.h" ex="false" tool="3" flavor2="0">
+      <item path="src/StringUtils.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="TlistProcessorFrame.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/TlistProcessorFrame.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="TlistProcessorFrame.h" ex="false" tool="3" flavor2="0">
+      <item path="src/TlistProcessorFrame.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="TlistProcessorFrameLinkDef.h" ex="false" tool="3" flavor2="0">
+      <item path="src/TlistProcessorFrameLinkDef.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="main.cc" ex="false" tool="1" flavor2="0">
+      <item path="src/main.cc" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -183,41 +183,41 @@ Contributor(s):
           </linkerDynSerch>
         </linkerTool>
       </compileType>
-      <item path="AppSettings.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/AppSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="AppSettings.h" ex="false" tool="3" flavor2="0">
+      <item path="src/AppSettings.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Constants.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/Constants.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Constants.h" ex="false" tool="3" flavor2="0">
+      <item path="src/Constants.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="FittingFunctions.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/FittingFunctions.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="FittingFunctions.h" ex="false" tool="3" flavor2="0">
+      <item path="src/FittingFunctions.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Geometry.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/Geometry.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Geometry.h" ex="false" tool="3" flavor2="0">
+      <item path="src/Geometry.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="GraphicsHelper.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/GraphicsHelper.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="GraphicsHelper.h" ex="false" tool="3" flavor2="0">
+      <item path="src/GraphicsHelper.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="HistProcessor.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/HistProcessor.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="HistProcessor.h" ex="false" tool="3" flavor2="0">
+      <item path="src/HistProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="StringUtils.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/StringUtils.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="StringUtils.h" ex="false" tool="3" flavor2="0">
+      <item path="src/StringUtils.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="TlistProcessorFrame.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/TlistProcessorFrame.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="TlistProcessorFrame.h" ex="false" tool="3" flavor2="0">
+      <item path="src/TlistProcessorFrame.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="TlistProcessorFrameLinkDef.h" ex="false" tool="3" flavor2="0">
+      <item path="src/TlistProcessorFrameLinkDef.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="main.cc" ex="false" tool="1" flavor2="0">
+      <item path="src/main.cc" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

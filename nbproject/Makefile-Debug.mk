@@ -35,15 +35,15 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/AppSettings.o \
-	${OBJECTDIR}/Constants.o \
-	${OBJECTDIR}/FittingFunctions.o \
-	${OBJECTDIR}/Geometry.o \
-	${OBJECTDIR}/GraphicsHelper.o \
-	${OBJECTDIR}/HistProcessor.o \
-	${OBJECTDIR}/StringUtils.o \
-	${OBJECTDIR}/TlistProcessorFrame.o \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/src/AppSettings.o \
+	${OBJECTDIR}/src/Constants.o \
+	${OBJECTDIR}/src/FittingFunctions.o \
+	${OBJECTDIR}/src/Geometry.o \
+	${OBJECTDIR}/src/GraphicsHelper.o \
+	${OBJECTDIR}/src/HistProcessor.o \
+	${OBJECTDIR}/src/StringUtils.o \
+	${OBJECTDIR}/src/TlistProcessorFrame.o \
+	${OBJECTDIR}/src/main.o
 
 
 # C Compiler Flags
@@ -72,50 +72,50 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tlist-processor: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tlist-processor ${OBJECTFILES} ${LDLIBSOPTIONS} -lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lpthread -stdlib=libc++ -lm -ldl -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 
-${OBJECTDIR}/AppSettings.o: AppSettings.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/AppSettings.o: src/AppSettings.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/AppSettings.o AppSettings.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/AppSettings.o src/AppSettings.cpp
 
-${OBJECTDIR}/Constants.o: Constants.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/Constants.o: src/Constants.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Constants.o Constants.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Constants.o src/Constants.cpp
 
-${OBJECTDIR}/FittingFunctions.o: FittingFunctions.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/FittingFunctions.o: src/FittingFunctions.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FittingFunctions.o FittingFunctions.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/FittingFunctions.o src/FittingFunctions.cpp
 
-${OBJECTDIR}/Geometry.o: Geometry.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/Geometry.o: src/Geometry.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Geometry.o Geometry.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/Geometry.o src/Geometry.cpp
 
-${OBJECTDIR}/GraphicsHelper.o: GraphicsHelper.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/GraphicsHelper.o: src/GraphicsHelper.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GraphicsHelper.o GraphicsHelper.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/GraphicsHelper.o src/GraphicsHelper.cpp
 
-${OBJECTDIR}/HistProcessor.o: HistProcessor.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/HistProcessor.o: src/HistProcessor.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/HistProcessor.o HistProcessor.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/HistProcessor.o src/HistProcessor.cpp
 
-${OBJECTDIR}/StringUtils.o: StringUtils.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/StringUtils.o: src/StringUtils.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/StringUtils.o StringUtils.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/StringUtils.o src/StringUtils.cpp
 
-${OBJECTDIR}/TlistProcessorFrame.o: TlistProcessorFrame.cpp
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/TlistProcessorFrame.o: src/TlistProcessorFrame.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TlistProcessorFrame.o TlistProcessorFrame.cpp
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/TlistProcessorFrame.o src/TlistProcessorFrame.cpp
 
-${OBJECTDIR}/main.o: main.cc
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/src/main.o: src/main.cc
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cc
+	$(COMPILE.cc) -g -I/Applications/root_v6.06.02/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main.o src/main.cc
 
 # Subprojects
 .build-subprojects:

@@ -38,14 +38,14 @@
 namespace std {} using namespace std;
 
 // Header files passed as explicit arguments
-#include "AppSettings.h"
-#include "Constants.h"
-#include "FittingFunctions.h"
-#include "Geometry.h"
-#include "GraphicsHelper.h"
-#include "HistProcessor.h"
-#include "StringUtils.h"
-#include "TlistProcessorFrame.h"
+#include "src/AppSettings.h"
+#include "src/Constants.h"
+#include "src/FittingFunctions.h"
+#include "src/Geometry.h"
+#include "src/GraphicsHelper.h"
+#include "src/HistProcessor.h"
+#include "src/StringUtils.h"
+#include "src/TlistProcessorFrame.h"
 
 // Header files passed via #pragma extra_include
 
@@ -62,7 +62,7 @@ namespace ROOT {
       ::TlistProcessorFrame *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(::TlistProcessorFrame));
       static ::ROOT::TGenericClassInfo 
-         instance("TlistProcessorFrame", "TlistProcessorFrame.h", 39,
+         instance("TlistProcessorFrame", "src/TlistProcessorFrame.h", 39,
                   typeid(::TlistProcessorFrame), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &TlistProcessorFrame_Dictionary, isa_proxy, 0,
                   sizeof(::TlistProcessorFrame) );
@@ -107,14 +107,14 @@ namespace ROOT {
 namespace {
   void TriggerDictionaryInitialization_TlistProcessorFrameDict_Impl() {
     static const char* headers[] = {
-"AppSettings.h",
-"Constants.h",
-"FittingFunctions.h",
-"Geometry.h",
-"GraphicsHelper.h",
-"HistProcessor.h",
-"StringUtils.h",
-"TlistProcessorFrame.h",
+"src/AppSettings.h",
+"src/Constants.h",
+"src/FittingFunctions.h",
+"src/Geometry.h",
+"src/GraphicsHelper.h",
+"src/HistProcessor.h",
+"src/StringUtils.h",
+"src/TlistProcessorFrame.h",
 0
     };
     static const char* includePaths[] = {
@@ -129,7 +129,7 @@ namespace {
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_Autoloading_Map;
-class __attribute__((annotate("$clingAutoload$TlistProcessorFrame.h")))  TlistProcessorFrame;
+class __attribute__((annotate("$clingAutoload$src/TlistProcessorFrame.h")))  TlistProcessorFrame;
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
 #line 1 "TlistProcessorFrameDict dictionary payload"
@@ -139,14 +139,14 @@ class __attribute__((annotate("$clingAutoload$TlistProcessorFrame.h")))  TlistPr
 #endif
 
 #define _BACKWARD_BACKWARD_WARNING_H
-#include "AppSettings.h"
-#include "Constants.h"
-#include "FittingFunctions.h"
-#include "Geometry.h"
-#include "GraphicsHelper.h"
-#include "HistProcessor.h"
-#include "StringUtils.h"
-#include "TlistProcessorFrame.h"
+#include "src/AppSettings.h"
+#include "src/Constants.h"
+#include "src/FittingFunctions.h"
+#include "src/Geometry.h"
+#include "src/GraphicsHelper.h"
+#include "src/HistProcessor.h"
+#include "src/StringUtils.h"
+#include "src/TlistProcessorFrame.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";

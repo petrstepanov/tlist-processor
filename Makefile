@@ -84,22 +84,23 @@ MYLDFLAGS=-m64
 MYGLIBS=-L/Applications/root_v6.06.02/lib -lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lpthread -stdlib=libc++ -lm -ldl
 MYLIBS=-L/Applications/root_v6.06.02/lib -lGui -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lpthread -stdlib=libc++ -lm -ldl -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 MYROOTSYS=/Applications/root_v6.06.02
-MYHEADERS=AppSettings.h \
-          Constants.h \
-          FittingFunctions.h \
-          Geometry.h \
-          GraphicsHelper.h \
-          HistProcessor.h \
-          StringUtils.h \
-          TlistProcessorFrame.h
-MYSOURCES=AppSettings.cpp \
-          Constants.cpp \
-          FittingFunctions.cpp \
-          Geometry.cpp \
-          GraphicsHelper.cpp \
-          HistProcessor.cpp \
-          StringUtils.cpp \
-          TlistProcessorFrame.cpp main.cc
+MYHEADERS=src/AppSettings.h \
+          src/Constants.h \
+          src/FittingFunctions.h \
+          src/Geometry.h \
+          src/GraphicsHelper.h \
+          src/HistProcessor.h \
+          src/StringUtils.h \
+          src/TlistProcessorFrame.h
+MYSOURCES=src/AppSettings.cpp \
+          src/Constants.cpp \
+          src/FittingFunctions.cpp \
+          src/Geometry.cpp \
+          src/GraphicsHelper.cpp \
+          src/HistProcessor.cpp \
+          src/StringUtils.cpp \
+          src/TlistProcessorFrame.cpp \
+	  src/main.cc
 
 # build
 build: .build-post
@@ -107,7 +108,7 @@ build: .build-post
 .build-pre:
 # Add your pre 'build' code here...
 	@echo Generating dictionary: TlistProcessorFrameDict.cpp
-	rootcling -f TlistProcessorFrameDict.cpp -c $(MYCFLAGS) -p $(MYHEADERS) TlistProcessorFrameLinkDef.h
+	rootcling -f TlistProcessorFrameDict.cpp -c $(MYCFLAGS) -p $(MYHEADERS) src/TlistProcessorFrameLinkDef.h
 #https://root.cern.ch/interacting-shared-libraries-rootcint
 	@echo Generating shared library: tlist-processor.so
 	g++ -shared -o tlist-processor.so $(MYCFLAGS) $(MYLIBS) TlistProcessorFrameDict.cpp $(MYSOURCES)
