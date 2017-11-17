@@ -30,6 +30,9 @@
 *.out
 *.app
 
+# macOS
+.DS_Store
+
 # Netbeans
 nbproject/
 .dep.inc

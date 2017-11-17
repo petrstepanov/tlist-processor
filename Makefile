@@ -4,12 +4,14 @@ SRC_DIR=src
 OBJ_DIR=build
 BIN_DIR=dist
 
+OS:=$(shell uname)
+
 APP_NAME=tlist-processor
 DICT_FILENAME=tlist-dict.cpp
 DICT_PCM_FILENAME=tlist-dict_rdict.pcm
 
 # Variables
-CXXFLAGS=`root-config --cflags` # -pthread -stdlib=libc++ -std=c++11 -m64 -I/Applications/root_v6.06.02/include
+CXXFLAGS=`root-config --cflags` -fPIC # -pthread -stdlib=libc++ -std=c++11 -m64 -I/Applications/root_v6.06.02/include
 LDFLAGS=`root-config --ldflags`
 GLIBS=`root-config --glibs` -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 HEADERS=src/AppSettings.h \
@@ -46,8 +48,11 @@ $(EXECUTABLE): $(OBJECTS) $(SHARED_LIBRARY)
 	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
 	# move .so library to bin folder
 	mv $(SHARED_LIBRARY) $(BIN_DIR)/$(SHARED_LIBRARY)
-	# change search location of the .so library to the executable directory of the app
+	# change search location of the .so library to the executable directory of the app (macOS only)
+ifeq ($(OS),Darwin)
 	install_name_tool -change $(APP_NAME).so @executable_path/$(APP_NAME).so $(EXECUTABLE)
+endif
+
 	# move dictionary to the bin folder - they say you have to
 	mv $(DICT_PCM_FILENAME) $(BIN_DIR)/$(DICT_PCM_FILENAME)
 
