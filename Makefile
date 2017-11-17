@@ -1,10 +1,13 @@
 # Environment
-CXX=clang++
+OS:=$(shell uname)
+ifeq ($(OS),Darwin)
+  CXX=clang++
+else
+  CXX=g++
+endif
 SRC_DIR=src
 OBJ_DIR=build
 BIN_DIR=dist
-
-OS:=$(shell uname)
 
 APP_NAME=tlist-processor
 DICT_FILENAME=tlist-dict.cpp
