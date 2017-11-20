@@ -6,13 +6,11 @@ Software is designed to process two-dimensional Doppler energy spectra. The back
 
 After the background subtraction software transforms two-dimensional histogram into a one-dimensional by introducing a new variable E1-E2. Check our [research group website SelimLab](http://physics.bgsu.edu/~faselim/).
 
-## Setup instructions
-
 Application is written in C++ with CERN ROOT libraries and GUI. In order to run the app first we need to install ROOT libraries. Unfortunately it is impossible to do static link your applications object files with the ROOT libraries as well as build their static versions. Moreover, sometimes source headers should be available at runtime.
 
 Currently it is possible to run application either on macOS or Linux. I will try to compile the windows binary whenever the native Windows ROOT 6 build will be released.
 
-Below find the instructions for macOS setup. Linux users should be able to
+## Setup instructions (macOS)
 
 ### Installing xCode
 
@@ -110,6 +108,34 @@ end run
 ```
 
 Save the script and give it a desired name `SW Calculator`? Next in order to change the application icon locate your app in Finder under `/Applications/` folder, right click and select `Show Package Contents`. Go to `Contents/Resources`. Replace `AutomatorApplet.icns` with an `.icns` file from the `resources` folder in GitHub repo but keep the name `AutomatorApplet.icns`. Voila now you can see a neat icon in Spotlight. Dang cool.
+
+## Setup instructions (Ubuntu-based linux)
+
+Download CERN root binary distribution that corresponds to the linux version you have [https://root.cern.ch/downloading-root](https://root.cern.ch/downloading-root). Unpack and move the files to the desired location.
+
+Set environment variables. Open terminal and type `nano ~/.bashrc`. In the end of file add following:
+
+```bash
+export ROOTSYS=/home/your-user-name/path-to-your-ROOT-folder
+export PATH=$PATH:$ROOTSYS/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib
+```
+
+Save file. Run `source ~/.bashrc`. Now you should be able to run ROOT by typing `root` in terminal.
+
+Install Git if you don't have it. In terminal run `sudo apt-get install git`. Navigate to the folder where the software will be located and download the sources. Do:
+
+```bash
+git clone https://github.com/petrstepanov/tlist-processor.git
+cd tlist-processor
+make
+```
+
+In order to run the application you need to navigate to the `/dist` folder first and run from there.
+
+```bash
+cd dist/ && ./tlist-processor
+```
 
 ---
 
