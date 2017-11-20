@@ -60,8 +60,12 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 
 	// Rotation checkbox
 	checkboxRotate = new TGCheckButton(frameTopBar, "45 degree rotation");
-	frameTopBar->AddFrame(checkboxRotate, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));
+	frameTopBar->AddFrame(checkboxRotate, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 0, 3, 0));
 
+	// Rotation checkbox
+	checkboxRelative = new TGCheckButton(frameTopBar, "Relative peak");
+	frameTopBar->AddFrame(checkboxRelative, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));        
+        
 	// Filename
 	labelFilename = new TGLabel(frameTopBar, "");
 	labelFilename->SetTextJustify(kTextRight | kTextTop);
@@ -287,25 +291,33 @@ void TlistProcessorFrame::processSpectrum(void){
 	// hist = readSpectrumFromFile(strFileName);
 	// hist = readSpectrumFromFileBinned(strFileName);  // Alternative file reading procedure
         HistProcessor* histProcessor = HistProcessor::getInstance();
-	hist = histProcessor->readSpectrumFromFile(strFileName);
-
+	hist = histProcessor->readSpectrumFromFile(strFileName);        
+        
 	// Crude calculation of the peak coordinates (based on the bin with maximum count)
 	// DoublePair peakCoordinates = getHistMaxBinCoordinate(hist);
-	if (hist->GetXaxis()->GetXmin() < 10 && hist->GetXaxis()->GetXmax() > 10){
-		e1Mean = 0; //peakCoordinates.first;
-		e2Mean = 0; //peakCoordinates.second;
-	}
-	else {
-		e1Mean = 510.72;
-		e2Mean = 510.72;
-	}
+        
+//	if (hist->GetXaxis()->GetXmin() < 10 && hist->GetXaxis()->GetXmax() > 10){
+//		e1Mean = 0; //peakCoordinates.first;
+//		e2Mean = 0; //peakCoordinates.second;
+//	}
+//	else {
+//		e1Mean = 510.72;
+//		e2Mean = 510.72;
+//	}
+        Int_t maxBinX, maxBinY, maxBinZ;
+        hist->GetMaximumBin(maxBinX, maxBinY, maxBinZ);
+        e1Mean = hist->GetXaxis()->GetBinCenter(maxBinX);
+        e2Mean = hist->GetYaxis()->GetBinCenter(maxBinY);
 
-	subtractBackground = checkboxSubtractBackground->IsOn();
-	isRotated = checkboxRotate->IsOn();
-	doRegion = checkboxEnergyRegion->IsOn();
-
+        std::cout << "Histogram maximum bin at (" << e1Mean << ", " << e2Mean << ")" << std::endl;
+        
 	TAxis* xAxis = hist->GetXaxis();
 	TAxis* yAxis = hist->GetYaxis();
+
+        isRotated = checkboxRotate->IsOn();
+	isRelative = checkboxRelative->IsOn();        
+	subtractBackground = checkboxSubtractBackground->IsOn();
+	doRegion = checkboxEnergyRegion->IsOn();
 
 	// TROOT* gROOT = gClient->GetRoot();
 
@@ -599,11 +611,22 @@ void TlistProcessorFrame::processSpectrum(void){
 	dEplus = numberPlusEnergy->GetNumber();
 	dEminus = (-1)* numberMinusEnergy->GetNumber();
 
+        Double_t e1MeanProject, e2MeanProject;
+        if (isRelative){
+            e1MeanProject = e1Mean;
+            e2MeanProject = e2Mean;
+        } else {
+            e1MeanProject = e1Mean > 250 ? 511 : 0;
+            e2MeanProject = e2Mean > 250 ? 511 : 0;            
+        }
+
+	std::cout << "Position of the projection center: [" << e1MeanProject << ", " << e2MeanProject << "]" << std::endl;
+        
 	// Project 2D histogram and make Doppler spectrum
 	// Here we actually get two 1D spectra - 1) Doppler spectrum 2) How many bins projected in every Doppler histogram bin
 	TH1Pair hists = isRotated ?
-		histProcessor->projectHistRotated(histProject, e1Mean, e2Mean, dEplus, dEminus, doRegion) :
-		histProcessor->projectHist(histProject, e1Mean, e2Mean, dEplus, dEminus, doRegion);
+		histProcessor->projectHistRotated(histProject, e1MeanProject, e2MeanProject, dEplus, dEminus, doRegion) :
+		histProcessor->projectHist(histProject, e1MeanProject, e2MeanProject, dEplus, dEminus, doRegion);
 	histDoppler = hists.first;
 	histSumNumber = hists.second;
 
@@ -637,11 +660,11 @@ void TlistProcessorFrame::processSpectrum(void){
         const char* drawOption = Constants::drawOptions[comboDrawOption->GetSelected()-1].c_str();
 
 	if (subtractBackground) {
-		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), bgf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
-		padsPair2 = GraphicsHelper::drawHist3D(histProject, canvasSubtractedSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
+		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), bgf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1MeanProject, e2MeanProject, dEplus, dEminus, doRegion, isRotated, drawOption);
+		padsPair2 = GraphicsHelper::drawHist3D(histProject, canvasSubtractedSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1MeanProject, e2MeanProject, dEplus, dEminus, doRegion, isRotated, drawOption);
 	} else {
 		// padsPair1 = drawHist3D(hist, canvasFullSpectrum->GetCanvas(), peakf2, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, isRotated, drawOption);
-		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1Mean, e2Mean, dEplus, dEminus, doRegion, isRotated, drawOption);
+		padsPair1 = GraphicsHelper::drawHist3D(hist, canvasFullSpectrum->GetCanvas(), NULL, kTRUE, displayE1Min, displayE1Max, displayE2Min, displayE2Max, e1MeanProject, e2MeanProject, dEplus, dEminus, doRegion, isRotated, drawOption);
 	}
 
 	// Draw sum number histogram

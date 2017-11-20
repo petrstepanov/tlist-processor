@@ -385,14 +385,22 @@ Double_t peakfunc(Double_t *x, Double_t *par){
 	Double_t spectFWHM = par[2];
 	Double_t FWHMres = par[3];
 	Double_t maxCount = par[4];
-	Double_t center = (meanE1 < 200) ? 0 : 510.7;
+//	Double_t center = (meanE1 < 200) ? 0 : 510.7;
 
 	// Exclude points from fit
-	if ((x[0]-center)*(x[0]-center) + (x[1]-center)*(x[1]-center) > 2*2){
+//	if ((x[0]-center)*(x[0]-center) + (x[1]-center)*(x[1]-center) > 2*2){
+//		TF1::RejectPoint();
+//		// return 0;
+//	}
+//	if (x[1]<-x[0]+2*center-1.5 || x[1]>-x[0]+2*center+1.5){
+//		TF1::RejectPoint();
+//		// return 0;
+//	}
+	if ((x[0]-meanE1)*(x[0]-meanE1) + (x[1]-meanE2)*(x[1]-meanE2) > 2*2){
 		TF1::RejectPoint();
 		// return 0;
 	}
-	if (x[1]<-x[0]+2*center-1.5 || x[1]>-x[0]+2*center+1.5){
+	if (x[1]<-x[0]+meanE1+meanE2-1.5 || x[1]>-x[0]+meanE1+meanE2+1.5){
 		TF1::RejectPoint();
 		// return 0;
 	}

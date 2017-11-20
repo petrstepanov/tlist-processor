@@ -59,6 +59,7 @@ private:
     //TGRadioButton* optionSubtractBackground;
     //TGRadioButton* optionCutDiagonal;
     TGCheckButton* checkboxRotate;
+    TGCheckButton* checkboxRelative;
     TGCheckButton* checkboxSubtractBackground;
 //    TGCheckButton* checkboxSqrt2;
     TGCheckButton* checkboxEnergyRegion;
@@ -75,6 +76,7 @@ private:
     Double_t dEplus;
     Double_t dEminus;
     Bool_t isRotated;
+    Bool_t isRelative;
     Bool_t subtractBackground;
     Bool_t doRegion;
 

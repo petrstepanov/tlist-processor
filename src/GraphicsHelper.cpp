@@ -220,8 +220,8 @@ TPadPair GraphicsHelper::drawHist3D(TH2* hist, TCanvas* canvas, TF2* tf2, Bool_t
 	line2->Draw();
 
 	if (doRegion){
-            Double_t e511 = e1_0 > 250 ? 511 : 0;    
-            drawHistSumRegion(e1Min, e1Max, e2Min, e2Max, e511, e511, dEplus, dEminus, isRotated);
+//            Double_t e511 = e1_0 > 250 ? 511 : 0;    
+            drawHistSumRegion(e1Min, e1Max, e2Min, e2Max, e1_0, e2_0, dEplus, dEminus, isRotated);
         }
 	// Update pads
 	pad2D->Modified();

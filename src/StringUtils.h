@@ -15,6 +15,8 @@
 #define STRINGUTILS_H
 
 #include <TString.h>
+#include <istream>
+#include <string>
 
 class StringUtils {
 public:
@@ -23,7 +25,8 @@ public:
     virtual ~StringUtils();
     static TString* stripFileName(TString* path);
     static TString* stripFileExtension(TString* path);
-
+    static std::istream& safeGetline(std::istream& is, std::string& t);
+    
 private:
 
 };

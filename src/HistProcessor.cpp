@@ -12,6 +12,7 @@
  */
 
 #include "HistProcessor.h"
+#include "StringUtils.h"
 
 HistProcessor::HistProcessor(){};
 
@@ -118,9 +119,6 @@ TH1Pair HistProcessor::projectHist(TH2* hist, Double_t e1Mean, Double_t e2Mean, 
 
     //Double_t lynx1BinWidth = (fLynx1Emax->GetNumber() - fLynx1Emin->GetNumber()) / (Double_t)(iLynx1Bins->GetNumber());
     //Double_t lynx2BinWidth = (fLynx2Emax->GetNumber() - fLynx2Emin->GetNumber()) / (Double_t)(iLynx2Bins->GetNumber());
-
-    e1Mean = e1Mean > 250 ? 511 : 0;
-    e2Mean = e2Mean > 250 ? 511 : 0;
 
     Double_t maxDiag = 0; // Track maximum bin diagonal width to be less than doppler bin width
     for (Int_t binX = 1; binX <= hist->GetNbinsX(); binX++){
@@ -276,7 +274,10 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
     // Skip spectrum header (2 lines)
     std::string str = "";
     const int skipLines = 2;
-    for (int j = 0; j<skipLines; j++) getline(inFile, str);
+    for (int j = 0; j<skipLines; j++) {
+        StringUtils::safeGetline(inFile, str);
+//        std::cout << str << std::endl;        
+    }
 
     // Histogram bins centers
     std::vector<Double_t> e1Values;
@@ -287,14 +288,15 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
 
     std::vector<Double_t> inputData;
 
-    while (std::getline(inFile, str)) {
+    while (!StringUtils::safeGetline(inFile, str).eof()) {
+//        std::cout << str << std::endl;
         std::stringstream ss(str);
         ss >> e1;
         if (ss.peek() == ',') ss.ignore();
         ss >> e2;
         if (ss.peek() == ',') ss.ignore();
         ss >> count;
-
+//        std::cout << e1 << " " << e2 << " " << count << std::endl;
         // Push values to array and cut Kompton edges
 //        if (e1>490 && e1 < 530 && e2>490 && e2 < 530){
 
@@ -365,12 +367,14 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
     for(std::vector<Double_t>::iterator iter = e1BinsBorders.begin(); iter != e1BinsBorders.end(); ++iter){
         std::cout << *iter << ' ';
     }
+    std::cout << std::endl;
 
     std::cout << std::endl;
     std::cout << "e2BinsBorders" << std::endl;
     for(std::vector<Double_t>::iterator iter = e2BinsBorders.begin(); iter != e2BinsBorders.end(); ++iter){
         std::cout << *iter << ' ';
     }
+    std::cout << std::endl;
 
     // Create 2D histogram with the binning above
     // Int_t binsE1 = e1Values.size();
