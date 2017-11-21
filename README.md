@@ -139,13 +139,13 @@ cd dist/ && ./tlist-processor
 
 ### Creating a launcher
 
-We can create a launcher and have `TLIST Processor` in the Ubuntu application list. One of the ways to do it is following. First create a script to launch the application. Here I save the script under `bin` directory in home folder.
+We can create a launcher and have `TLIST Processor` in the Ubuntu application list. One of the ways to do it is following. First create a script to launch the application. It is an ok practice to keep scripts under `~/bin` directory in home folder.
 ```bash
 mkdir ~/bin; cd ~/bin
-nano ./tlist-processor
+nano ./tlist-processor.sh
 ```
 
-The script will navigate to the application folder and run it. Also this is a separate bash instance so we need to re-declare our environment variables in in the script.
+The script will navigate to the application folder and run it. Also this is gonna be a separate bash instance so we need to re-declare the `LD_LIBRARY_PATH` environment variable in order for the session to access ROOT shared libraries.
 ```bash
 #!/bin/bash
 export ROOTSYS=/home/your-user-name/path-to-your-ROOT-folder
@@ -156,7 +156,7 @@ cd /home/your-user-name/path-to-your-application-folder/dist
 exec bash
 ```
 
-Next, we save script and make it executable `chmod +x ./tlist-processor`. Add your `~/bin` folder to `PATH`. Also, add `~/bin` to PATH variable in `~/.bashrc`:
+Next, we save script and make it executable `chmod +x ./tlist-processor.sh`. Add your `~/bin` folder to `PATH`. Also, add `~/bin` to PATH variable in `~/.bashrc`:
 
 ```bash
 export PATH=$PATH:/home/your-user-name/bin
@@ -172,14 +172,14 @@ Comment=Doppler spectra processor
 Exec=tlist-processor.sh
 Icon=/home/your-user-name/path-to-your-application-folder/resources/tlist-processor.png
 Categories=Utility
-Keywords=command;prompt;cmd;commandline;run;
+Keywords=tlist;doppler;positron;processor;
 ```
 
 Tip. If you want to have the terminal output window as well, set `Exec=gnome-terminal -e "tlist-processor.sh"` on Ubuntu or `Exec=pantheon-terminal -e "tlist-processor.sh"` on systems with Pantheon desktop environment like elementary OS.
 
 Save file and make it executable `chmod +x ~/.local/share/applications/tlist-processor.desktop`.
 
-Now the TLIST Processor will appear under the applications menu on your system. You can run it from there.
+Now the TLIST Processor icon appear under the applications menu on your system. You can run it from there.
 
 ---
 
