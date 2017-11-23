@@ -348,7 +348,7 @@ void TlistProcessorFrame::processSpectrum(void){
                 Double_t fwhm = numberResolutionFWHM->GetNumber();
 
 		// Define background function parameter starting values
-		const int npar = 31;
+		const int npar = 33;
 		Double_t f2params[npar] = { hiSleeveMaxCount,					// 0) threeGammaIntE1
 		                            lowSleeveMaxCount,					// 1) comptonIntE1
 		                            hiSleeveMaxCount,					// 2) threeGammaIntE2
@@ -363,8 +363,8 @@ void TlistProcessorFrame::processSpectrum(void){
 		                            0.21,						// 11) bg3
 		                            10,							// 12) lowExpStretch
 		                            10,							// 13) hiExpStretch
-		                            1e-10,						// 14) lowExpContrib
-		                            0,							// 15) hiExpContrib
+		                            1,                                                  // 14) lowExpContrib
+		                            1,							// 15) hiExpContrib
 		                            2,							// 16) FWHM1
 		                            5,							// 17) FWHM2
 		                            15,							// 18) FWHM3
@@ -376,10 +376,12 @@ void TlistProcessorFrame::processSpectrum(void){
                                             histXmax,                                           // 24)
 		                            histYmin,                                           // 25)
                                             histYmax,                                           // 26)
-		                            1,							// 27) exclude option - 0) full fit, 1) only ridge sides
+		                            2,							// 27) exclude option - 0) full fit; 1) only ridge sides; 2) all but peak
 		                            fwhm,						// 28) resolution FWHM
 		                            5,                                                  // 29) spectFWHM2
-                                            0.1 };                                              // 30) spectG1Int
+                                            0.8,                                                // 30) spectG1Int
+                                            isRotated ? 1. : 0.,                                  // 31) isRotated
+                                            isRelative ? 1. : 0. };                               // 32) isRelative
 		// Define correct background function (rotated or not)
 		bgf2 = (TF2*)gROOT->GetListOfFunctions()->FindObject("bgf2");
 		if (bgf2) delete bgf2;
@@ -440,71 +442,71 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParLimits(11, 0, 5);
 
 		bgf2->SetParName(12, "loExpStr");            // Atan horizontal stretch coefficient
-		bgf2->SetParameter(12, 10);
+//		bgf2->SetParameter(12, 10);
 		bgf2->SetParLimits(12, 1, 100);											// Lo Exp Stretch
 
 		bgf2->SetParName(13, "hiExpStr");            // Atan horizontal stretch coefficient
-		bgf2->SetParameter(13, 10);
+//		bgf2->SetParameter(13, 10);
 		bgf2->SetParLimits(13, 10, 10);											// Hi Exp Stretch
 
 		bgf2->SetParName(14, "loExpContr");            // Three Gauss Amplitude
-		bgf2->SetParameter(14, 1);
+//		bgf2->SetParameter(14, 1);
 		bgf2->SetParLimits(14, 0.01, 20);											// Lo Exp Contribution
 
 		bgf2->SetParName(15, "hiExpContr");            // Three Gauss Amplitude
-		bgf2->SetParameter(15, 1);
+//		bgf2->SetParameter(15, 1);
 		bgf2->SetParLimits(15, 0.01, 20);											// Hi Exp Contribution
 
 		bgf2->SetParName(16, "FWHM1");
-		bgf2->SetParameter(16, 2);
+//		bgf2->SetParameter(16, 2);
 		bgf2->SetParLimits(16, 2, 2); // 0.5 5
 
 		bgf2->SetParName(17, "FWHM2");
-		bgf2->SetParameter(17, 5);
+//		bgf2->SetParameter(17, 5);
 		bgf2->SetParLimits(17, 5, 5); // 3 15
 
 		bgf2->SetParName(18, "FWHM3");
-		bgf2->SetParameter(18, 15);
+//		bgf2->SetParameter(18, 15);
 		bgf2->SetParLimits(18, 15, 15); // 8 30
 
 		bgf2->SetParName(19, "spectFWHM");
-		bgf2->SetParameter(19, 2);
+//		bgf2->SetParameter(19, 2);
 		bgf2->SetParLimits(19, 2, 2);  // 0.5 10
 
 		bgf2->SetParName(20, "maxCount");
-		bgf2->SetParameter(20, hist->GetMaximum());
-		bgf2->SetParLimits(20, hist->GetMaximum(), hist->GetMaximum());
+//		bgf2->SetParameter(20, hist->GetMaximum());
+		bgf2->SetParLimits(20, hist->GetMaximum()/1.5, hist->GetMaximum()*1.5);
 
 		bgf2->SetParName(21, "g1Int");
-		bgf2->SetParameter(21, 0.8);
+//		bgf2->SetParameter(21, 0.8);
 		bgf2->SetParLimits(21, 0.8, 0.8);
 
 		bgf2->SetParName(22, "g2Int");
-		bgf2->SetParameter(22, 0.8);
+//		bgf2->SetParameter(22, 0.8);
 		bgf2->SetParLimits(22, 0.8, 0.8);
 
 		bgf2->SetParName(23, "histXmin");
-		bgf2->SetParameter(23, histXmin);
+//		bgf2->SetParameter(23, histXmin);
 		bgf2->SetParLimits(23, histXmin, histXmin);
 
 		bgf2->SetParName(24, "histXmax");
-		bgf2->SetParameter(24, histXmax);
+//		bgf2->SetParameter(24, histXmax);
 		bgf2->SetParLimits(24, histXmax, histXmax);
 
 		bgf2->SetParName(25, "histYmin");
-		bgf2->SetParameter(25, histYmin);
+//		bgf2->SetParameter(25, histYmin);
 		bgf2->SetParLimits(25, histYmin, histYmin);
 
 		bgf2->SetParName(26, "histYmax");
-		bgf2->SetParameter(26, histYmax);
+//		bgf2->SetParameter(26, histYmax);
 		bgf2->SetParLimits(26, histYmax, histYmax);
 
 		bgf2->SetParName(27, "fitRange");
-		bgf2->SetParameter(27, 2);  // Set range only sides
+//		bgf2->SetParameter(27, 2);  // Set range only sides
 		bgf2->SetParLimits(27, 2, 2);  // Set range only sides
 
 		bgf2->SetParName(28, "resolutionFWHM");
-		bgf2->SetParameter(28, fwhm);
+//		bgf2->SetParameter(28, fwhm);
 		bgf2->SetParLimits(28, fwhm, fwhm);
 
 		bgf2->SetParName(29, "spectFWHM2");
@@ -512,13 +514,17 @@ void TlistProcessorFrame::processSpectrum(void){
 		bgf2->SetParLimits(29, 1, 10);
 
 		bgf2->SetParName(30, "spectG1I");
-		bgf2->SetParameter(30, 0.8);
+//		bgf2->SetParameter(30, 0.8);
 		bgf2->SetParLimits(30, 1E-4, 1);
 
                 bgf2->SetParName(31, "isRotated");
-		bgf2->SetParameter(31, isRotated);
-		bgf2->SetParLimits(31, 1E-4, 1);
+//		bgf2->SetParameter(31, isRotated ? 1 : 0);
+		bgf2->SetParLimits(31, isRotated ? 1 : 0, isRotated ? 1 : 0);
 
+                bgf2->SetParName(32, "isRelative");
+//		bgf2->SetParameter(32, isRelative ? 1 : 0);
+		bgf2->SetParLimits(32, isRelative ? 1 : 0, isRelative ? 1 : 0);
+                
                 // Clear convoluted ridge profile
                 convolutionCache.clear();
 

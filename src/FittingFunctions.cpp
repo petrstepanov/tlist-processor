@@ -165,9 +165,12 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     Double_t yMax = par[26];
     Int_t fitRegion = par[27];
     Double_t resolutionFWHM = par[28];
+    Bool_t isRotated = par[31];
+    Bool_t isRelative = par[32];
     
     Double_t _x = x[0], _y = x[1];
-    Double_t mc2 = meanE1 > 250 ? 511 : 0;
+    Double_t mc2E1 = isRelative ? meanE1 : 511;
+    Double_t mc2E2 = isRelative ? meanE2 : 511;
 
     // Fit region 
     Int_t borderWidth = 2;
@@ -178,14 +181,14 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
                     TF1::RejectPoint();
                     // return 0;
             }
-            if (_y < -_x + 2*mc2 - spectHalfWidth && _y > -_x + 2*mc2 + spectHalfWidth){
+            if (_y < -_x + mc2E1 + mc2E2 - spectHalfWidth && _y > -_x + mc2E1 + mc2E2 + spectHalfWidth){
                     TF1::RejectPoint();
                     // return 0;
             }            
             break;
         }
         case 2: {   //all but the peak
-            if (_y < -_x + 2*mc2 + spectHalfWidth && _y > -_x + 2*mc2 - spectHalfWidth -1.5){
+            if (_y < -_x + mc2E1 + mc2E2 + spectHalfWidth && _y > -_x + mc2E1 + mc2E2 - spectHalfWidth - 1.5){
                     TF1::RejectPoint();
 //                     return 0;
             }
@@ -195,13 +198,13 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     }
 
     // Ridge profiles
-    Double_t ridge1Par[7] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
+    Double_t ridge1Par[7] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E1};
     Double_t ridgeAlongE1 = (TMath::Gaus(_y, meanE2, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_y, meanE2, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
 //                          * ridgeProfile(_x, ridge1Par);
 //                          * convolutedRidgeCache(_x, ridge1Par, resolutionFWHM);
                             * convolutionGauss(ridgeProfile, _x, ridge1Par, resolutionFWHM);            
 
-    Double_t ridge2Par[7] = {countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2};
+    Double_t ridge2Par[7] = {countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E2};
     Double_t ridgeAlongE2 = (TMath::Gaus(_x, meanE1, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(_x, meanE1, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction)
 //                          * ridgeProfile(_y, ridge2Par);
 //                          * convolutedRidgeCache(_y, ridge2Par, resolutionFWHM);
