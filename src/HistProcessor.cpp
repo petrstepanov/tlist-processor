@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   HistProcessor.cpp
  * Author: petrstepanov
- * 
+ *
  * Created on August 9, 2017, 10:11 PM
  */
 
@@ -276,7 +276,7 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
     const int skipLines = 2;
     for (int j = 0; j<skipLines; j++) {
         StringUtils::safeGetline(inFile, str);
-//        std::cout << str << std::endl;        
+//        std::cout << str << std::endl;
     }
 
     // Histogram bins centers
@@ -327,17 +327,17 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
     std::sort(e2Values.begin(), e2Values.end());
 
     // Print Bins
-    std::cout << std::endl;
-    std::cout << "e1Bins" << std::endl;
-    for(std::vector<Double_t>::iterator iter = e1Values.begin(); iter != e1Values.end(); ++iter){
-        std::cout << *iter << ' ';
-    }
-
-    std::cout << std::endl;
-    std::cout << "e2Bins" << std::endl;
-    for(std::vector<Double_t>::iterator iter = e2Values.begin(); iter != e2Values.end(); ++iter){
-        std::cout << *iter << ' ';
-    }
+    // std::cout << std::endl;
+    // std::cout << "e1Bins" << std::endl;
+    // for(std::vector<Double_t>::iterator iter = e1Values.begin(); iter != e1Values.end(); ++iter){
+    //     std::cout << *iter << ' ';
+    // }
+		//
+    // std::cout << std::endl;
+    // std::cout << "e2Bins" << std::endl;
+    // for(std::vector<Double_t>::iterator iter = e2Values.begin(); iter != e2Values.end(); ++iter){
+    //     std::cout << *iter << ' ';
+    // }
 
     // Get Borders Arrays
     // Double_t* e1BinsBordersArray = getBorders(e1Values);
@@ -362,19 +362,19 @@ TH2* HistProcessor::readSpectrumFromFile(TString* filename){
     e2BinsBorders.push_back(*it + (*it - *(it - 1)) / 2);
 
     // Print Bin Borders
-    std::cout << std::endl;
-    std::cout << "e1BinBorders" << std::endl;
-    for(std::vector<Double_t>::iterator iter = e1BinsBorders.begin(); iter != e1BinsBorders.end(); ++iter){
-        std::cout << *iter << ' ';
-    }
-    std::cout << std::endl;
-
-    std::cout << std::endl;
-    std::cout << "e2BinsBorders" << std::endl;
-    for(std::vector<Double_t>::iterator iter = e2BinsBorders.begin(); iter != e2BinsBorders.end(); ++iter){
-        std::cout << *iter << ' ';
-    }
-    std::cout << std::endl;
+    // std::cout << std::endl;
+    // std::cout << "e1BinBorders" << std::endl;
+    // for(std::vector<Double_t>::iterator iter = e1BinsBorders.begin(); iter != e1BinsBorders.end(); ++iter){
+    //     std::cout << *iter << ' ';
+    // }
+    // std::cout << std::endl;
+		//
+    // std::cout << std::endl;
+    // std::cout << "e2BinsBorders" << std::endl;
+    // for(std::vector<Double_t>::iterator iter = e2BinsBorders.begin(); iter != e2BinsBorders.end(); ++iter){
+    //     std::cout << *iter << ' ';
+    // }
+    // std::cout << std::endl;
 
     // Create 2D histogram with the binning above
     // Int_t binsE1 = e1Values.size();
@@ -423,12 +423,12 @@ void HistProcessor::saveHistToFile(TH1* hist, const char* filename) {
 	outputFile.close();
 }
 
-Bool_t HistProcessor::isTomskIssue(TH2* hist) {
-    Double_t sideBinCount = hist->GetBinContent(1, 1);
-    Double_t sleeveBinCount = hist->GetBinContent(20, 20);
-    std::cout << "sideBinCount: " << sideBinCount << ", sleeveBinCount: " << sleeveBinCount << std::endl;
-    if (sideBinCount > 5*sleeveBinCount) {
-        return kTRUE;
-    }
-    return kFALSE;
-}
+// Bool_t HistProcessor::isTomskIssue(TH2* hist) {
+//     Double_t sideBinCount = hist->GetBinContent(1, 1);
+//     Double_t sleeveBinCount = hist->GetBinContent(20, 20);
+//     std::cout << "sideBinCount: " << sideBinCount << ", sleeveBinCount: " << sleeveBinCount << std::endl;
+//     if (sideBinCount > 5*sleeveBinCount) {
+//         return kTRUE;
+//     }
+//     return kFALSE;
+// }

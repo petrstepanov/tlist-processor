@@ -64,8 +64,8 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 
 	// Rotation checkbox
 	checkboxRelative = new TGCheckButton(frameTopBar, "Relative peak");
-	frameTopBar->AddFrame(checkboxRelative, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));        
-        
+	frameTopBar->AddFrame(checkboxRelative, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2*dx, 2*dx, 3, 0));
+
 	// Filename
 	labelFilename = new TGLabel(frameTopBar, "");
 	labelFilename->SetTextJustify(kTextRight | kTextTop);
@@ -91,28 +91,25 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
 		TGNumberFormat::kNEAAnyNumber,
 		TGNumberFormat::kNELLimitMax, 0);
 
-//	TGLabel* labelE1E2 = new TGLabel(frameMiddleBar, "< E1 + E2 - 2mc^2 <");
-	numberPlusEnergy = new TGNumberEntry(frameMiddleBar, 1.7, 3, -1, TGNumberFormat::kNESRealOne,
-		TGNumberFormat::kNEANonNegative,
-		TGNumberFormat::kNELLimitMin, 0);
+	numberPlusEnergy = new TGNumberEntry(frameMiddleBar, 1.7, 3, -1, TGNumberFormat::kNESRealOne, TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMin, 0);
 	frameMiddleBar->AddFrame(numberPlusEnergy, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 2*dx, 1, 0));
-//	frameMiddleBar->AddFrame(labelE1E2, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, dx, 4, 0));
-        {
-            Int_t colorIndex = 9999;
-            TColor *c = new TColor(colorIndex, 0.906, 0.906, 0.906); // grey canvas background color
-            TRootEmbeddedCanvas* trec = new TRootEmbeddedCanvas("trec", frameMiddleBar, 113, 20, 0);
-            trec->GetCanvas()->cd();
-            trec->GetCanvas()->SetFillColor(colorIndex);
-            TLatex* latex = new TLatex();
-            Double_t fontnumber = 4; // helvetica-medium-r-normal  "Arial"
-            Int_t precision = 3;     // Text size is given in pixels
-            latex->SetTextFont(10*fontnumber + precision); // precision 2, font number 4 ()
-            latex->SetTextSize(14);
-            latex->SetTextAlign(13);  //align at top
-            latex->DrawLatex(0, 0.9, "< E_{1} + E_{2} #minus 2mc^{2} <");
-            frameMiddleBar->AddFrame(trec, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 0, 1));
-            trec->GetCanvas()->SetEditable(kFALSE);
-        }
+
+	{
+		Int_t colorIndex = 9999;
+		TColor *c = new TColor(colorIndex, 0.906, 0.906, 0.906); // grey canvas background color
+		TRootEmbeddedCanvas* trec = new TRootEmbeddedCanvas("trec", frameMiddleBar, 113, 20, 0);
+		trec->GetCanvas()->cd();
+		trec->GetCanvas()->SetFillColor(colorIndex);
+		TLatex* latex = new TLatex();
+		Double_t fontnumber = 4; // helvetica-medium-r-normal  "Arial"
+		Int_t precision = 3;     // Text size is given in pixels
+		latex->SetTextFont(10*fontnumber + precision); // precision 2, font number 4 ()
+		latex->SetTextSize(14);
+		latex->SetTextAlign(13);  //align at top
+		latex->DrawLatex(0, 0.9, "< E_{1} + E_{2} #minus 2mc^{2} <");
+		frameMiddleBar->AddFrame(trec, new TGLayoutHints(kLHintsRight | kLHintsTop, 0, 0, 1));
+		trec->GetCanvas()->SetEditable(kFALSE);
+	}
 
 	frameMiddleBar->AddFrame(numberMinusEnergy, new TGLayoutHints(kLHintsRight, 0, dx, 1, 0));
 	frameMiddleBar->AddFrame(checkboxEnergyRegion, new TGLayoutHints(kLHintsRight, 0, 0, 3, 0));
@@ -290,12 +287,12 @@ void TlistProcessorFrame::processSpectrum(void){
 	TString* strFileName = AppSettings::instance()->getFilename();
 	// hist = readSpectrumFromFile(strFileName);
 	// hist = readSpectrumFromFileBinned(strFileName);  // Alternative file reading procedure
-        HistProcessor* histProcessor = HistProcessor::getInstance();
-	hist = histProcessor->readSpectrumFromFile(strFileName);        
-        
+	HistProcessor* histProcessor = HistProcessor::getInstance();
+	hist = histProcessor->readSpectrumFromFile(strFileName);
+
 	// Crude calculation of the peak coordinates (based on the bin with maximum count)
 	// DoublePair peakCoordinates = getHistMaxBinCoordinate(hist);
-        
+
 //	if (hist->GetXaxis()->GetXmin() < 10 && hist->GetXaxis()->GetXmax() > 10){
 //		e1Mean = 0; //peakCoordinates.first;
 //		e2Mean = 0; //peakCoordinates.second;
@@ -310,12 +307,12 @@ void TlistProcessorFrame::processSpectrum(void){
         e2Mean = hist->GetYaxis()->GetBinCenter(maxBinY);
 
         std::cout << "Histogram maximum bin at (" << e1Mean << ", " << e2Mean << ")" << std::endl;
-        
+
 	TAxis* xAxis = hist->GetXaxis();
 	TAxis* yAxis = hist->GetYaxis();
 
         isRotated = checkboxRotate->IsOn();
-	isRelative = checkboxRelative->IsOn();        
+	isRelative = checkboxRelative->IsOn();
 	subtractBackground = checkboxSubtractBackground->IsOn();
 	doRegion = checkboxEnergyRegion->IsOn();
 
@@ -524,7 +521,7 @@ void TlistProcessorFrame::processSpectrum(void){
                 bgf2->SetParName(32, "isRelative");
 //		bgf2->SetParameter(32, isRelative ? 1 : 0);
 		bgf2->SetParLimits(32, isRelative ? 1 : 0, isRelative ? 1 : 0);
-                
+
                 // Clear convoluted ridge profile
                 convolutionCache.clear();
 
@@ -623,11 +620,11 @@ void TlistProcessorFrame::processSpectrum(void){
             e2MeanProject = e2Mean;
         } else {
             e1MeanProject = e1Mean > 250 ? 511 : 0;
-            e2MeanProject = e2Mean > 250 ? 511 : 0;            
+            e2MeanProject = e2Mean > 250 ? 511 : 0;
         }
 
 	std::cout << "Position of the projection center: [" << e1MeanProject << ", " << e2MeanProject << "]" << std::endl;
-        
+
 	// Project 2D histogram and make Doppler spectrum
 	// Here we actually get two 1D spectra - 1) Doppler spectrum 2) How many bins projected in every Doppler histogram bin
 	TH1Pair hists = isRotated ?
