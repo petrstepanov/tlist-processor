@@ -44,3 +44,6 @@ dist/
 Makefile-netbeans
 Makefile-my
 Makefile
+
+# debug symbols
+tlist-processor.so.dSYM

@@ -246,8 +246,12 @@ void TlistProcessorFrame::openFileButtonClicked(void){
 
 	fi.fFileTypes = filetypes;
 	fi.fIniDir = StrDup(dir);
-	new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &fi);
-
+	TGFileDialog* tgfd = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &fi);
+        tgfd->SetWMSize(640, 640);
+//	tgfd->MapSubwindows();
+//	tgfd->Resize(640,640);
+//	tgfd->MapWindow();
+        
 	// when obtained the filename - process the file
 	if ((fi.fFilename != NULL) && (strlen(fi.fFilename)>0)){
 		TString* strFileName = new TString(fi.fFilename);

@@ -14,7 +14,8 @@ DICT_FILENAME=tlist-dict.cpp
 DICT_PCM_FILENAME=tlist-dict_rdict.pcm
 
 # Variables
-CXXFLAGS=-O3 `root-config --cflags` -fPIC # -pthread -stdlib=libc++ -std=c++11 -m64 -I/Applications/root_v6.06.02/include
+#CXXFLAGS=-O3 `root-config --cflags` -fPIC # -pthread -stdlib=libc++ -std=c++11 -m64 -I/Applications/root_v6.06.02/include
+CXXFLAGS=-g `root-config --cflags` -fPIC -m64
 LDFLAGS=`root-config --ldflags`
 GLIBS=`root-config --glibs` -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 HEADERS=src/AppSettings.h \
