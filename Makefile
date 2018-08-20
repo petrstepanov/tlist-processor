@@ -12,10 +12,11 @@ BIN_DIR=dist
 APP_NAME=tlist-processor
 DICT_FILENAME=tlist-dict.cpp
 DICT_PCM_FILENAME=tlist-dict_rdict.pcm
+DSYM_DIR=tlist-processor.so.dSYM
 
 # Variables
 #CXXFLAGS=-O3 `root-config --cflags` -fPIC # -pthread -stdlib=libc++ -std=c++11 -m64 -I/Applications/root_v6.06.02/include
-CXXFLAGS=`root-config --cflags` -fPIC -m64
+CXXFLAGS=`root-config --cflags` -fPIC
 LDFLAGS=`root-config --ldflags`
 GLIBS=`root-config --glibs` -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 HEADERS=src/AppSettings.h \
@@ -51,7 +52,14 @@ debug: CXXFLAGS += -g #-ggdb -DDEBUG -g
 debug: executable
 
 executable: directories $(DICTIONARY) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE)
-	
+
+$(DICTIONARY): $(HEADERS) $(SRC_DIR)/LinkDef.h
+	rootcling -f $@ -c $(CXXFLAGS) -p $^
+
+# https://root.cern.ch/interacting-shared-libraries-rootcint (they forgot $(GLIBS) damn)
+$(SHARED_LIBRARY): $(DICTIONARY) $(SOURCES)
+	$(CXX) -shared -o $@ $(LDFLAGS) $(CXXFLAGS) $(GLIBS) $^
+
 $(EXECUTABLE): $(OBJECTS) $(SHARED_LIBRARY)
 	@echo "Linking "$@
 	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
@@ -63,14 +71,7 @@ ifeq ($(OS),Darwin)
 endif
 	# move dictionary to the bin folder - they say you have to
 	mv $(DICT_PCM_FILENAME) $(BIN_DIR)/$(DICT_PCM_FILENAME)
-	rm $(DICT_FILENAME)
-
-$(DICTIONARY): $(HEADERS) $(SRC_DIR)/LinkDef.h
-	rootcling -f $@ -c $(CXXFLAGS) -p $^
-
-# https://root.cern.ch/interacting-shared-libraries-rootcint (they forgot $(GLIBS) damn)
-$(SHARED_LIBRARY): $(DICTIONARY) $(SOURCES)
-	$(CXX) -shared -o $@ $(LDFLAGS) $(CXXFLAGS) $(GLIBS) $^
+	# rm $(DICT_FILENAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo "Compiling "$@
@@ -86,7 +87,8 @@ clean:
 	rm -f -r $(OBJ_DIR)
 	rm -f -r $(BIN_DIR)
 	rm -f $(DICTIONARY)
-	rm -f *.pcm
+	rm -f $(DICT_FILENAME)
+	rm -f -r $(DSYM_DIR)
 
 directories:
 	mkdir -p $(OBJ_DIR)
