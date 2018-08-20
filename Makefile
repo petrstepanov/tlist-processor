@@ -15,7 +15,7 @@ DICT_PCM_FILENAME=tlist-dict_rdict.pcm
 
 # Variables
 #CXXFLAGS=-O3 `root-config --cflags` -fPIC # -pthread -stdlib=libc++ -std=c++11 -m64 -I/Applications/root_v6.06.02/include
-CXXFLAGS=-g `root-config --cflags` -fPIC -m64
+CXXFLAGS=`root-config --cflags` -fPIC -m64
 LDFLAGS=`root-config --ldflags`
 GLIBS=`root-config --glibs` -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
 HEADERS=src/AppSettings.h \
@@ -45,8 +45,13 @@ SHARED_LIBRARY=$(APP_NAME).so
 .PHONY: directories
 
 # Empty target ensures that list of all 'end products' are called
-all: directories $(DICTIONARY) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE)
+all: executable
 
+debug: CXXFLAGS += -g #-ggdb -DDEBUG -g
+debug: executable
+
+executable: directories $(DICTIONARY) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE)
+	
 $(EXECUTABLE): $(OBJECTS) $(SHARED_LIBRARY)
 	@echo "Linking "$@
 	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
