@@ -33,7 +33,7 @@
 #include "FittingFunctions.h"
 #include "HistProcessor.h"
 #include "TlistProcessorFrame.h"
-#include "LinkDef.h"
+// #include "LinkDef.h"
 
 ClassImp(TlistProcessorFrame)
 
@@ -251,7 +251,7 @@ void TlistProcessorFrame::openFileButtonClicked(void){
 //	tgfd->MapSubwindows();
 //	tgfd->Resize(640,640);
 //	tgfd->MapWindow();
-        
+
 	// when obtained the filename - process the file
 	if ((fi.fFilename != NULL) && (strlen(fi.fFilename)>0)){
 		TString* strFileName = new TString(fi.fFilename);

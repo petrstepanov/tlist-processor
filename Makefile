@@ -5,6 +5,7 @@ ifeq ($(OS),Darwin)
 else
   CXX=g++
 endif
+
 SRC_DIR=src
 OBJ_DIR=build
 BIN_DIR=dist
@@ -19,31 +20,19 @@ DSYM_DIR=tlist-processor.so.dSYM
 CXXFLAGS=`root-config --cflags` -fPIC
 LDFLAGS=`root-config --ldflags`
 GLIBS=`root-config --glibs` -lRooFit -lRooFitCore -lHtml -lMinuit -lFumili
-HEADERS=src/AppSettings.h \
-        src/Constants.h \
-        src/FittingFunctions.h \
-        src/Geometry.h \
-        src/GraphicsHelper.h \
-        src/HistProcessor.h \
-        src/StringUtils.h \
-        src/TlistProcessorFrame.h
-SOURCES=src/AppSettings.cpp \
-        src/Constants.cpp \
-        src/FittingFunctions.cpp \
-        src/Geometry.cpp \
-        src/GraphicsHelper.cpp \
-        src/HistProcessor.cpp \
-        src/StringUtils.cpp \
-        src/TlistProcessorFrame.cpp \
-        src/main.cpp
 
-OBJECTS_TEMP=$(SOURCES:.cpp=.o)
-OBJECTS=$(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(OBJECTS_TEMP))
+H_EXT = h
+HEADERS = $(shell find $(SRC_DIR) -type f -name *.$(H_EXT))
+
+SRC_EXT = cpp
+SOURCES = $(shell find $(SRC_DIR) -type f -name *.$(SRC_EXT))
+
+OBJECTS_TEMP = $(SOURCES:.cpp=.o)
+OBJECTS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(OBJECTS_TEMP))
+
 EXECUTABLE=$(BIN_DIR)/$(APP_NAME)
 DICTIONARY=$(DICT_FILENAME)
 SHARED_LIBRARY=$(APP_NAME).so
-# List of special targets that do not generate files
-.PHONY: directories
 
 # Empty target ensures that list of all 'end products' are called
 all: executable
@@ -53,7 +42,7 @@ debug: executable
 
 executable: directories $(DICTIONARY) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE)
 
-$(DICTIONARY): $(HEADERS) $(SRC_DIR)/LinkDef.h
+$(DICTIONARY): $(HEADERS) $(SRC_DIR)/LinkDef.hpp
 	rootcling -f $@ -c $(CXXFLAGS) -p $^
 
 # https://root.cern.ch/interacting-shared-libraries-rootcint (they forgot $(GLIBS) damn)
@@ -87,9 +76,15 @@ clean:
 	rm -f -r $(OBJ_DIR)
 	rm -f -r $(BIN_DIR)
 	rm -f $(DICTIONARY)
-	rm -f $(DICT_FILENAME)
 	rm -f -r $(DSYM_DIR)
 
 directories:
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(BIN_DIR)
+
+echo:
+$(info SOURCES: $(SOURCES))
+$(info HEADERS: $(HEADERS))
+
+# List of special targets that do not generate files
+.PHONY: directories echo
