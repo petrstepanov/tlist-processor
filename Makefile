@@ -83,8 +83,8 @@ directories:
 	mkdir -p $(BIN_DIR)
 
 echo:
-$(info SOURCES: $(SOURCES))
-$(info HEADERS: $(HEADERS))
+	$(info SOURCES: $(SOURCES))
+	$(info HEADERS: $(HEADERS))
 
 # List of special targets that do not generate files
 .PHONY: directories echo
