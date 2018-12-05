@@ -34,6 +34,9 @@ EXECUTABLE=$(BIN_DIR)/$(APP_NAME)
 DICTIONARY=$(DICT_FILENAME)
 SHARED_LIBRARY=$(APP_NAME).so
 
+# convenience variable for making directories
+dir_guard=@mkdir -p $(@D)
+
 # Empty target ensures that list of all 'end products' are called
 all: executable
 
@@ -63,6 +66,7 @@ endif
 	# rm $(DICT_FILENAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(dir_guard)
 	@echo "Compiling "$@
 # compile with dependency files - why?
 #	$(CXX) $(CXXFLAGS) -c -g -MMD -MP -MF "$@.d" -o $@ $<
