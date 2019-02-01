@@ -30,19 +30,20 @@
 *.out
 *.app
 
-# macOS
-.DS_Store
-
 # Netbeans
 nbproject/
 .dep.inc
 build/
 dist/
-*dict.cpp
+*dictionary.cxx
 *.pcm
 *.so
-Makefile-netbeans
-Makefile-my
 
-# debug symbols
-tlist-processor.so.dSYM
+# Eclipse
+.project
+.cproject
+.settings/
+Debug/
+
+# macOS
+.DS_store

@@ -33,11 +33,10 @@
 #include "FittingFunctions.h"
 #include "HistProcessor.h"
 #include "TlistProcessorFrame.h"
-// #include "LinkDef.h"
 
-ClassImp(TlistProcessorFrame)
+// ClassImp(TlistProcessorFrame)
 
-TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h){
+TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGMainFrame(p,w,h){
 //	mainFrame = new TGMainFrame(p, w, h, kMainFrame | kVerticalFrame);
 //	mainFrame->SetName("mainFrame");
 	this->SetWindowName("TLIST Processor");
