@@ -20,7 +20,11 @@
 
 class Constants {
   public:   
-    static const Char_t* applicationName;
+    static const char* APPLICATION_NAME;
+    static char* APPLICATION_ICON[];
+    static const UInt_t WINDOW_WIDTH;
+    static const UInt_t WINDOW_HEIGHT;
+
     static const std::string drawOptions[2];
 };
 

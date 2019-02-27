@@ -3,8 +3,8 @@
 #include "TlistProcessorFrame.h"
 
 int main(int argc, char **argv) {
-    TApplication theApp("App", &argc, argv);
-    new TlistProcessorFrame(gClient->GetRoot(), 800, 600);
-    theApp.Run();
+	TApplication* app = new TApplication("TLIST Processor", &argc, argv);
+	TlistProcessorFrame* tlistProcessorFrame = new TlistProcessorFrame(gClient->GetRoot());
+    app->Run();
     return 0;
 }

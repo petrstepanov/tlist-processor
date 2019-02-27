@@ -41,6 +41,7 @@ private:
 //    TGMainFrame* mainFrame;
     TGNumberEntry* numberMinusEnergy;
     TGNumberEntry* numberPlusEnergy;
+    TGHorizontalFrame* resolutionFrame;
     TGNumberEntry* numberResolutionFWHM;
     TGNumberEntry* fLynx1Emin;
     TGNumberEntry* fLynx1Emax;
@@ -91,9 +92,10 @@ private:
     TPadPair padsPair2;
 
 public:
-    TlistProcessorFrame(const TGWindow*, UInt_t, UInt_t);
-    void openFileButtonClicked(void);
-    void processSpectrum(void);
+    TlistProcessorFrame(const TGWindow*);
+    void checkboxSubtractBackgroundClicked();
+    void openFileButtonClicked();
+    void processSpectrum();
     void displayMinNumberChanged();
     void displayMaxNumberChanged();
     void updateAxisRange();
@@ -103,8 +105,8 @@ public:
     void setButtonsEnabled(Bool_t);
     void onCheckboxEnergyRegionClicked();
     TString* getBaseOutputFilename();
-    void tryToClose();
-    void closeWindow();
+    void dontCloseWindow();
+    void doCloseWindow();
     virtual ~TlistProcessorFrame();
 
     ClassDef(TlistProcessorFrame, 0);
