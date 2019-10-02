@@ -2,7 +2,7 @@
 
 Software is designed to process two-dimensional Doppler energy spectra. The background fitting and subtraction mechanism is implemented. Ridge profile along every energy axis is fitted with a step function that accuonts on higher energetic Compton scattered photons (constant background along the energy axis) and Compton scattering of annihilation photons outside of the detector volume (~constant contribution in the range < 511 keV). An exponential contribution in the range < 511 keV is found due to incomplete charge collection in the detector. Another exponential contribution in the region > 511 keV occurs due to the pile-up effect.
 
-<img src="http://physics.bgsu.edu/selimlab/wp-content/uploads/2016/12/tlist-processor-screenshot.png" alt="SW Calculator desktop application" style="width: 100%;"/>
+<img src="http://petrstepanov.com/static/tlist-processor.png" alt="TLIST Processor desktop application" style="width: 100%;"/>
 
 After the background subtraction software transforms two-dimensional histogram into a one-dimensional by introducing a new variable E1-E2. Check our [research group website SelimLab](http://physics.bgsu.edu/~faselim/).
 
