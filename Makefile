@@ -124,9 +124,13 @@ endif
 
 install:
 	install -d $(DESTDIR)$(PREFIX)/bin/
-	install -m 755 $(EXECUTABLE) $(DESTDIR)$(PREFIX)/bin/
-	install -m 755 $(BIN_DIR)/$(SHARED_LIBRARY) $(DESTDIR)$(PREFIX)/bin/
-	install -m 755 $(BIN_DIR)/$(DICT_PCM_FILENAME) $(DESTDIR)$(PREFIX)/bin/
+	sudo install -m 755 $(EXECUTABLE) $(DESTDIR)$(PREFIX)/bin/
+	sudo install -m 755 $(BIN_DIR)/$(SHARED_LIBRARY) $(DYNAMIC_LIBRARY_PATH)/
+	sudo install -m 755 $(BIN_DIR)/$(DICT_PCM_FILENAME) $(DYNAMIC_LIBRARY_PATH)/
+
+install-linux-launcher:
+	xdg-icon-resource install --context apps --size 128 ./resources/tlist-processor.png tlist-processor
+	xdg-desktop-menu install ./resources/tlist-processor.desktop
 
 # List of special targets that do not generate files
 .PHONY: clean directories move_files move_debug_symbols echo

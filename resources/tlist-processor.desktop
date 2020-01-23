@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=TLIST Processor
+Comment=Convert two-dimensional energy spectra to CDB
+Icon=tlist-processor
+Exec=tlist-processor
+Terminal=true
+Categories=Science

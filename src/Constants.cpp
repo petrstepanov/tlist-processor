@@ -11,6 +11,9 @@
  * Created on October 29, 2017, 7:34 PM
  */
 
+// Disable warnings for -Wwrite-strings
+// https://stackoverflow.com/questions/925179/selectively-remove-warning-message-gcc
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #include "Constants.h"
 
 const char* Constants::APPLICATION_NAME = "TLIST Processor";
