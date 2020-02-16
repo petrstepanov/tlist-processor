@@ -134,6 +134,7 @@ ifeq ($(OS),Darwin)
 endif
 
 install:
+	# run 'make install' or 'sudo -E make install' to preserve user environment 
 	sudo install -m 755 $(EXECUTABLE) $(DESTDIR)$(PREFIX)/bin/
 	sudo install -m 755 $(BIN_DIR)/$(SHARED_LIBRARY) $(DYNAMIC_LIBRARY_PATH)/
 	sudo install -m 755 $(BIN_DIR)/$(DICT_PCM_FILENAME) $(DYNAMIC_LIBRARY_PATH)/
