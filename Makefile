@@ -39,7 +39,8 @@ OBJECTS_TEMP = $(SOURCES:.cpp=.o)
 OBJECTS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(OBJECTS_TEMP))
 
 # Executable and shared library files path and name
-EXECUTABLE=$(BIN_DIR)/$(APP_NAME)       # src/app
+EXECUTABLE=$(BIN_DIR)/$(APP_NAME)
+EXECUTABLE_DEBUG=$(BIN_DIR)/$(APP_NAME)-debug
 SHARED_LIBRARY=$(APP_NAME)-library.so           # app-library.so
 SHARED_LIBRARY_DS=$(APP_NAME)-library.so.dSYM   # .so debug symbols (generated on macOS)
 
@@ -57,28 +58,32 @@ all: release
 
 # Add -O3 optimization level for the release
 release: CXXFLAGS+=-O3
-release: executable move_files
+release: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE) move_files
 
 # Also might add flags for debug optimizations: -Og -ggdb -DDEBUG
 debug: CXXFLAGS+=-g
-debug: executable move_files move_debug_symbols
+debug: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE_DEBUG) move_files move_debug_symbols
 
-executable: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE)
-
+# Link executable for release
 $(EXECUTABLE): $(OBJECTS) $(SHARED_LIBRARY)
 	@echo "Linking "$@
 	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
-#ifeq ($(OS),Darwin)
+
+# Link executable for debug. 
+# We don't install .so to DYLD path. Instead we keep it relative to the executable
+# And assign relative .so search path (./) to the executable 
+$(EXECUTABLE_DEBUG):
+ifeq ($(OS),Darwin)
 	# for macOS just link against the shared library
-	# $(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
+	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
 	# then change search location of the .so library in the executable - set as same directory (macOS only)
-	# install_name_tool -change $(SHARED_LIBRARY) @executable_path/$(SHARED_LIBRARY) $(EXECUTABLE)
-#else
+	install_name_tool -change $(SHARED_LIBRARY) @executable_path/$(SHARED_LIBRARY) $(EXECUTABLE)
+else
 	# for Linux add runtime shared library search path ./ relative to the executable (gcc only)
 	# https://stackoverflow.com/questions/38058041/correct-usage-of-rpath-relative-vs-absolute
-	# $(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS) -Wl,-rpath,'$$ORIGIN'
-#endif
-
+	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS) -Wl,-rpath,'$$ORIGIN'
+endif
+	
 $(DICT_FILENAME): $(HEADERS) $(SRC_DIR)/LinkDef.h
 	rootcling -f $@ -c $(CXXFLAGS) -p $^
 
