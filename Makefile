@@ -40,7 +40,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(OBJECTS_TEMP))
 
 # Executable and shared library files path and name
 EXECUTABLE=$(BIN_DIR)/$(APP_NAME)
-EXECUTABLE_DEBUG=$(BIN_DIR)/$(APP_NAME)-debug
+EXECUTABLE_LOCAL=$(BIN_DIR)/$(APP_NAME)-local
 SHARED_LIBRARY=$(APP_NAME)-library.so           # app-library.so
 SHARED_LIBRARY_DS=$(APP_NAME)-library.so.dSYM   # .so debug symbols (generated on macOS)
 
@@ -54,15 +54,19 @@ ifeq ($(PREFIX),)
 endif
 
 # Empty target ensures that list of all 'end products' are called
-all: release
+all: production
+
+# Add -O3 optimization level for the production release
+production: CXXFLAGS+=-O3
+production: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE) move_files
 
 # Add -O3 optimization level for the release
 release: CXXFLAGS+=-O3
-release: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE) move_files
+release: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE_LOCAL) move_files
 
 # Also might add flags for debug optimizations: -Og -ggdb -DDEBUG
 debug: CXXFLAGS+=-g
-debug: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE_DEBUG) move_files move_debug_symbols
+debug: directories $(DICT_FILENAME) $(SHARED_LIBRARY) $(OBJECTS) $(EXECUTABLE_LOCAL) move_files move_debug_symbols
 
 # Link executable for release
 $(EXECUTABLE): $(OBJECTS) $(SHARED_LIBRARY)
@@ -72,12 +76,12 @@ $(EXECUTABLE): $(OBJECTS) $(SHARED_LIBRARY)
 # Link executable for debug. 
 # We don't install .so to DYLD path. Instead we keep it relative to the executable
 # And assign relative .so search path (./) to the executable 
-$(EXECUTABLE_DEBUG):
+$(EXECUTABLE_LOCAL):
 ifeq ($(OS),Darwin)
 	# for macOS just link against the shared library
 	$(CXX) -o $@ $(OBJECTS) $(SHARED_LIBRARY) $(GLIBS)
 	# then change search location of the .so library in the executable - set as same directory (macOS only)
-	install_name_tool -change $(SHARED_LIBRARY) @executable_path/$(SHARED_LIBRARY) $(EXECUTABLE)
+	install_name_tool -change $(SHARED_LIBRARY) @executable_path/$(SHARED_LIBRARY) $(EXECUTABLE_LOCAL)
 else
 	# for Linux add runtime shared library search path ./ relative to the executable (gcc only)
 	# https://stackoverflow.com/questions/38058041/correct-usage-of-rpath-relative-vs-absolute
