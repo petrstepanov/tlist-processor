@@ -16,7 +16,6 @@
 
 #include <TH1.h>
 #include <TH2.h>
-#include "FittingFunctions.h"
 #include <TMath.h>
 #include <iostream>
 #include <fstream>

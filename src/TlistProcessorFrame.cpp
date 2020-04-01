@@ -32,11 +32,15 @@
 #include <algorithm>
 #include "AppSettings.h"
 #include "Constants.h"
-#include "FittingFunctions.h"
 #include "HistProcessor.h"
 #include "TlistProcessorFrame.h"
 
 // ClassImp(TlistProcessorFrame)
+
+extern Double_t bgfunc(Double_t *x, Double_t *par);
+extern Double_t bgfuncrotate(Double_t *x, Double_t *par);
+extern Double_t peakfunc(Double_t *x, Double_t *par);
+extern Double_t peakfuncrotate(Double_t *x, Double_t *par);
 
 TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p) :
 		TGMainFrame(p, Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT) {
@@ -533,7 +537,7 @@ void TlistProcessorFrame::processSpectrum(void) {
 		bgf2->SetParLimits(32, isRelative ? 1 : 0, isRelative ? 1 : 0);
 
 		// Clear convoluted ridge profile
-		convolutionCache.clear();
+//		convolutionCache.clear();
 
 		// Fit histogram with arms
 		// "S" The result of the fit is returned in the TFitResultPtr

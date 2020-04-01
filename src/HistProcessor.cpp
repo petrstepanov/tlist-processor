@@ -14,6 +14,9 @@
 #include "HistProcessor.h"
 #include "StringUtils.h"
 
+extern Double_t bgfunc(Double_t *x, Double_t *par);
+extern Double_t bgfuncrotate(Double_t *x, Double_t *par);
+
 HistProcessor::HistProcessor(){};
 
 HistProcessor::HistProcessor(HistProcessor const& fileUtil){};
