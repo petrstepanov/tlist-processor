@@ -59,12 +59,16 @@ Double_t myRidgeProfile(Double_t *x, Double_t* par){
 	return ridge;
 }
 
-void initializeConvolution(Double_t eMin, Double_t eMax){
-	TF1* resolution = new TF1("resolution",myResolution, -10, 10, 1);
+Bool_t ridgeInitializedFlag = kFALSE;
+
+void initializeRidgeFunctions(Double_t eMin, Double_t eMax){
 	TF1* ridge = new TF1("ridge",myRidgeProfile, eMin, eMax, 6);
-	TF1Convolution* ridgeGausConv = new TF1Convolution(ridge, resolution);
-	ridgeGausConv->SetNofPointsFFT((int)eMax - eMin);
-	TF1* ridgeGausConvFunc = new TF1("ridgeGausConvFunc", *ridgeGausConv, ridgeGausConv->GetXmin(), ridgeGausConv->GetXmax(), ridgeGausConv->GetNpar());
+	TF1* resolution = new TF1("resolution",myResolution, -10, 10, 1);
+	TF1Convolution* ridgeGausConv = new TF1Convolution(ridge, resolution, eMin, eMax);
+	ridgeGausConv->SetNofPointsFFT((int)(eMax - eMin)*2); // 2 points per keV
+	ridgeGausConv->SetNofPointsFFT(1000);
+	TF1* ridgeGausConvFunc = new TF1("ridgeGausConv", *ridgeGausConv, ridgeGausConv->GetXmin(), ridgeGausConv->GetXmax(), ridgeGausConv->GetNpar());
+	ridgeInitializedFlag = kTRUE;
 }
 
 //class FittingContext {
@@ -150,8 +154,8 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
     Double_t meanE1 = par[4];
     Double_t meanE2 = par[5];
     Double_t armFWHM1 = par[6];
-    Double_t armFWHM2 = par[7];
-    Double_t secondGaussFraction = par[8];
+//    Double_t armFWHM2 = par[7];
+//    Double_t secondGaussFraction = par[8];
     Double_t bg1 = par[9];
     Double_t bg24 = par[10];
     Double_t bg3 = par[11];
@@ -204,26 +208,42 @@ Double_t bgfunc(Double_t *x, Double_t *par) {
         default: break;
     }
 
-    if (gROOT->GetFunction("ridgeGausConvFunc") == NULL){
-    	initializeConvolution(TMath::Min(xMin, yMin), TMath::Max(xMax, yMax));
+    if (!ridgeInitializedFlag){
+    	initializeRidgeFunctions(TMath::Min(xMin, yMin), TMath::Max(xMax, yMax));
     }
-    TF1* ridgeGausConvFunc = (TF1*) gROOT->GetFunction("ridgeGausConvFunc");
+
+    // Disable convolution if FWHM set to 0
+    TF1* ridgeFunc = resolutionFWHM == 0 ? (TF1*) gROOT->GetFunction("ridge") : (TF1*) gROOT->GetFunction("ridgeGausConv");
 
     // Ridge along E1
-    // In TF1Convolution the parameters of f() and g() are joined
+    // In TF1Convolution(f,g) the parameters of f() and g() are joined, g() parameters go first in array!
     // Double_t ridgePar[7] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E1}; // parameters of ridge
     // Double_t gaussPar[1] = {resolutionFWHM}; // parameters of gauss
-    Double_t ridgeGausConvParE1[8] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E1, resolutionFWHM};
-    ridgeGausConvFunc->SetParameters(ridgeGausConvParE1);
+    if (resolutionFWHM == 0){
+		Double_t ridgeGausConvParE1[7] = {countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E1};
+		ridgeFunc->SetParameters(ridgeGausConvParE1);
+    } else {
+		Double_t ridgeGausConvParE1[8] = {resolutionFWHM, countHiE1, countLowE1, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E1};
+		ridgeFunc->SetParameters(ridgeGausConvParE1);
+    }
 
     // Multiply convoluted ridge profile on perpendicular two gausses
-    Double_t ridgeAlongE1 = ridgeGausConvFunc->Eval(e1) * (TMath::Gaus(e2, meanE2, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(e2, meanE2, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction);
+    Double_t ridgeAlongE1 = ridgeFunc->Eval(e1) *
+    		TMath::Gaus(e2, meanE2, armFWHM1 * FWHMtoSigma, kTRUE);
+//    		(TMath::Gaus(e2, meanE2, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(e2, meanE2, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction);
 
     // Ridge along E2
-    Double_t ridgeGausConvParE2[8] = {countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E2, resolutionFWHM};
-    ridgeGausConvFunc->SetParameters(ridgeGausConvParE2);
+    if (resolutionFWHM == 0){
+		Double_t ridgeGausConvParE2[7] = {countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E2};
+		ridgeFunc->SetParameters(ridgeGausConvParE2);
+    } else {
+		Double_t ridgeGausConvParE2[8] = {resolutionFWHM, countHiE2, countLowE2, lowExpContrib, lowExpStretch, hiExpContrib, hiExpStretch, mc2E2};
+		ridgeFunc->SetParameters(ridgeGausConvParE2);
+    }
 
-    Double_t ridgeAlongE2 = ridgeGausConvFunc->Eval(e2) * (TMath::Gaus(e1, meanE1, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(e1, meanE1, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction);
+    Double_t ridgeAlongE2 = ridgeFunc->Eval(e2) *
+    		TMath::Gaus(e1, meanE1, armFWHM1 * FWHMtoSigma, kTRUE);
+//    (TMath::Gaus(e1, meanE1, armFWHM1 * FWHMtoSigma, kTRUE)*(1 - secondGaussFraction) + TMath::Gaus(e1, meanE1, armFWHM2 * FWHMtoSigma, kTRUE)*secondGaussFraction);
 
     // Sum ridges along E1 and E2
 

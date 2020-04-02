@@ -30,6 +30,7 @@
 #include <iterator>
 #include <string>
 #include <algorithm>
+#include <TFitResult.h>
 #include "AppSettings.h"
 #include "Constants.h"
 #include "HistProcessor.h"
@@ -135,8 +136,7 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p) :
 	// Resolution frame
 	resolutionFrame = new TGHorizontalFrame(frameMiddleBar);
 	resolutionFrame->AddFrame(new TGLabel(resolutionFrame, "Detector FWHM, keV"), new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx, 4));
-	numberResolutionFWHM = new TGNumberEntry(resolutionFrame, 1.0, 3, -1, TGNumberFormat::kNESRealOne,
-			TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMin, 0);
+	numberResolutionFWHM = new TGNumberEntry(resolutionFrame, 1.0, 3, -1, TGNumberFormat::kNESRealOne, TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMin, 0);
 	resolutionFrame->AddFrame(numberResolutionFWHM, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx));
 
 	frameMiddleBar->AddFrame(resolutionFrame, new TGLayoutHints(kLHintsLeft | kLHintsTop, 0, dx));
@@ -405,119 +405,119 @@ void TlistProcessorFrame::processSpectrum(void) {
 		bgf2->SetParameters(f2params);
 
 		bgf2->SetParName(0, "3GIntE1");              // Higher atan limit along E1 axis
-		// bgf2->SetParameter(0, hiSleeveMaxCount);
+		bgf2->SetParameter(0, hiSleeveMaxCount);
 		bgf2->SetParLimits(0, 0, hiSleeveMaxCount * 5);
 
 		bgf2->SetParName(1, "compIntE1");              // Lower atan limit along E1 axis
-		// bgf2->SetParameter(1, lowSleeveMaxCount);
+		bgf2->SetParameter(1, lowSleeveMaxCount);
 		bgf2->SetParLimits(1, 0, lowSleeveMaxCount * 5);
 
 		bgf2->SetParName(2, "3GIntE2");              // Higher atan limit along E2 axis
-		// bgf2->SetParameter(2, hiSleeveMaxCount);
+		bgf2->SetParameter(2, hiSleeveMaxCount);
 		bgf2->SetParLimits(2, 0, hiSleeveMaxCount * 5);
 
 		bgf2->SetParName(3, "compIntE2");              // Lower atan limit along E2 axis
-		// bgf2->SetParameter(3, lowSleeveMaxCount);
+		bgf2->SetParameter(3, lowSleeveMaxCount);
 		bgf2->SetParLimits(3, 0, lowSleeveMaxCount * 2);
 
 		bgf2->SetParName(4, "e1Mean");                    // Peak position on E1 axis
-		// bgf2->SetParameter(4, e1Mean);
+		bgf2->SetParameter(4, e1Mean);
 		bgf2->SetParLimits(4, e1Mean - 2, e1Mean + 2);
 
 		bgf2->SetParName(5, "e2Mean");                    // Peak position on E2 axis
-		// bgf2->SetParameter(5, e2Mean);
+		bgf2->SetParameter(5, e2Mean);
 		bgf2->SetParLimits(5, e2Mean - 2, e2Mean + 2);
 
 		bgf2->SetParName(6, "armFWHM1");           // 1st gauss width in thick arm profile
-		// bgf2->SetParameter(6, 3);
+		bgf2->SetParameter(6, 3);
 		bgf2->SetParLimits(6, 1, 8);
 
 		bgf2->SetParName(7, "armFWHM2");           // 2nd gauss width in thick arm profile
-		// bgf2->SetParameter(7, 5);
+		bgf2->SetParameter(7, 5);
 		bgf2->SetParLimits(7, 2, 20);
 
 		bgf2->SetParName(8, "g2Frac");             // 2nd gauss fraction
-		// bgf2->SetParameter(8, 0.01);
+		bgf2->SetParameter(8, 0.01);
 		bgf2->SetParLimits(8, 0, 1);
 
 		bgf2->SetParName(9, "bg1");                     // Descartes quarter I value
-		// bgf2->SetParameter(9, 0.01);
+		bgf2->SetParameter(9, 0.01);
 		bgf2->SetParLimits(9, 0, 0.1);
 
 		bgf2->SetParName(10, "bg24");                    // Descartes quarters II and IV values
-		// bgf2->SetParameter(10, 0.04);
+		bgf2->SetParameter(10, 0.04);
 		bgf2->SetParLimits(10, 0, 5);
 
 		bgf2->SetParName(11, "bg3");                     // Descartes quarter III value
-		// bgf2->SetParameter(11, 0.21);
+		bgf2->SetParameter(11, 0.21);
 		bgf2->SetParLimits(11, 0, 5);
 
 		bgf2->SetParName(12, "loExpStr");            // Atan horizontal stretch coefficient
-//		bgf2->SetParameter(12, 10);
+		bgf2->SetParameter(12, 10);
 		bgf2->SetParLimits(12, 1, 100);											// Lo Exp Stretch
 
 		bgf2->SetParName(13, "hiExpStr");            // Atan horizontal stretch coefficient
-//		bgf2->SetParameter(13, 10);
+		bgf2->SetParameter(13, 10);
 		bgf2->SetParLimits(13, 10, 10);											// Hi Exp Stretch
 
 		bgf2->SetParName(14, "loExpContr");            // Three Gauss Amplitude
-//		bgf2->SetParameter(14, 1);
+		bgf2->SetParameter(14, 1);
 		bgf2->SetParLimits(14, 0.01, 20);											// Lo Exp Contribution
 
 		bgf2->SetParName(15, "hiExpContr");            // Three Gauss Amplitude
-//		bgf2->SetParameter(15, 1);
+		bgf2->SetParameter(15, 1);
 		bgf2->SetParLimits(15, 0.01, 20);											// Hi Exp Contribution
 
 		bgf2->SetParName(16, "FWHM1");
-//		bgf2->SetParameter(16, 2);
+		bgf2->SetParameter(16, 2);
 		bgf2->SetParLimits(16, 2, 2); // 0.5 5
 
 		bgf2->SetParName(17, "FWHM2");
-//		bgf2->SetParameter(17, 5);
+		bgf2->SetParameter(17, 5);
 		bgf2->SetParLimits(17, 5, 5); // 3 15
 
 		bgf2->SetParName(18, "FWHM3");
-//		bgf2->SetParameter(18, 15);
+		bgf2->SetParameter(18, 15);
 		bgf2->SetParLimits(18, 15, 15); // 8 30
 
 		bgf2->SetParName(19, "spectFWHM");
-//		bgf2->SetParameter(19, 2);
+		bgf2->SetParameter(19, 2);
 		bgf2->SetParLimits(19, 2, 2);  // 0.5 10
 
 		bgf2->SetParName(20, "maxCount");
-//		bgf2->SetParameter(20, hist->GetMaximum());
+		bgf2->SetParameter(20, hist->GetMaximum());
 		bgf2->SetParLimits(20, hist->GetMaximum() / 1.5, hist->GetMaximum() * 1.5);
 
 		bgf2->SetParName(21, "g1Int");
-//		bgf2->SetParameter(21, 0.8);
+		bgf2->SetParameter(21, 0.8);
 		bgf2->SetParLimits(21, 0.8, 0.8);
 
 		bgf2->SetParName(22, "g2Int");
-//		bgf2->SetParameter(22, 0.8);
+		bgf2->SetParameter(22, 0.8);
 		bgf2->SetParLimits(22, 0.8, 0.8);
 
 		bgf2->SetParName(23, "histXmin");
-//		bgf2->SetParameter(23, histXmin);
+		bgf2->SetParameter(23, histXmin);
 		bgf2->SetParLimits(23, histXmin, histXmin);
 
 		bgf2->SetParName(24, "histXmax");
-//		bgf2->SetParameter(24, histXmax);
+		bgf2->SetParameter(24, histXmax);
 		bgf2->SetParLimits(24, histXmax, histXmax);
 
 		bgf2->SetParName(25, "histYmin");
-//		bgf2->SetParameter(25, histYmin);
+		bgf2->SetParameter(25, histYmin);
 		bgf2->SetParLimits(25, histYmin, histYmin);
 
 		bgf2->SetParName(26, "histYmax");
-//		bgf2->SetParameter(26, histYmax);
+		bgf2->SetParameter(26, histYmax);
 		bgf2->SetParLimits(26, histYmax, histYmax);
 
 		bgf2->SetParName(27, "fitRange");
-//		bgf2->SetParameter(27, 2);  // Set range only sides
+		bgf2->SetParameter(27, 2);  // Set range only sides
 		bgf2->SetParLimits(27, 2, 2);  // Set range only sides
 
 		bgf2->SetParName(28, "resolutionFWHM");
-//		bgf2->SetParameter(28, fwhm);
+		bgf2->SetParameter(28, fwhm);
 		bgf2->SetParLimits(28, fwhm, fwhm);
 
 		bgf2->SetParName(29, "spectFWHM2");
@@ -525,15 +525,15 @@ void TlistProcessorFrame::processSpectrum(void) {
 		bgf2->SetParLimits(29, 1, 10);
 
 		bgf2->SetParName(30, "spectG1I");
-//		bgf2->SetParameter(30, 0.8);
+		bgf2->SetParameter(30, 0.8);
 		bgf2->SetParLimits(30, 1E-4, 1);
 
 		bgf2->SetParName(31, "isRotated");
-//		bgf2->SetParameter(31, isRotated ? 1 : 0);
+		bgf2->SetParameter(31, isRotated ? 1 : 0);
 		bgf2->SetParLimits(31, isRotated ? 1 : 0, isRotated ? 1 : 0);
 
 		bgf2->SetParName(32, "isRelative");
-//		bgf2->SetParameter(32, isRelative ? 1 : 0);
+		bgf2->SetParameter(32, isRelative ? 1 : 0);
 		bgf2->SetParLimits(32, isRelative ? 1 : 0, isRelative ? 1 : 0);
 
 		// Clear convoluted ridge profile
@@ -544,6 +544,7 @@ void TlistProcessorFrame::processSpectrum(void) {
 		// "N" Do not store the graphics function, do not draw
 		// "L" Use Loglikelihood method (default is chisquare method) - deals with zero counts
 		TFitResultPtr r = hist->Fit("bgf2", "S0L");
+		r.Get()->Print();
 
 		// Now we fix first 9 parameters (ridge heights)
 		// for (int a = 0; a < 12; a++){
@@ -572,15 +573,15 @@ void TlistProcessorFrame::processSpectrum(void) {
 		TF1* myfunc = hist->GetFunction("bgf2");
 		Double_t fittedParams[npar];
 		for (Int_t k = 0; k < npar; k++) {
-			fittedParams[k] = myfunc->GetParameter(k);
+			fittedParams[k] = myfunc != NULL ? myfunc->GetParameter(k) : f2params[k];
 		}
 
 		// Subtract Fit from histogram
 		histProject = histProcessor->subtractFitFromHist(hist, fittedParams, isRotated);
 
 		// Update approximate peak center coordinates (calculated as maximum bin coordinated) with fitted peak center coordinates
-		e1Mean = myfunc->GetParameter(4);
-		e2Mean = myfunc->GetParameter(5);
+		e1Mean = myfunc != NULL ? myfunc->GetParameter(4) : f2params[4];
+		e2Mean = myfunc != NULL ? myfunc->GetParameter(5) : f2params[5];
 	} else {
 		// Fitting peak center
 		// TODO: support rotation!
