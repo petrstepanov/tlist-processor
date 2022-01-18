@@ -26,8 +26,8 @@ Open Terminal and clone program source files in your home folder:
 
 ```
 cd
-git clone https://github.com/petrstepanov/sw-calculator
-cd sw-calculator
+git clone https://github.com/petrstepanov/tlist-processor
+cd tlist-processor
 ```
 Check program dependencies and create native makefile with CMake. Finally build and install. System will ask for your password to install the app.
 
@@ -41,17 +41,17 @@ On linux you can install application launcher:
 ```
 make install-launcher
 ```
-To install app launcher on macOS run package `resources/sw-calculator.pkg`.
+To install app launcher on macOS run package `resources/tlist-processor.pkg`.
 
 Program source files are not needed any more and can be removed from your computer:
 
 ```
-rm -rf ~/sw-calculator
+rm -rf ~/tlist-processor
 ```
 
 ## Running program
 
-Find application in the system menu. Alternatively, open Termnal and type `sw-calculator` to launch the program. 
+Find application in the system menu. Alternatively, open Termnal and type `tlist-processor` to launch the program. 
 
 
 ---
