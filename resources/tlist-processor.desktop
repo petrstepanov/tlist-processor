@@ -5,7 +5,7 @@ Name=TLIST Processor
 Comment=Convert two-dimensional energy spectra to CDB
 Icon=tlist-processor
 Exec=tlist-processor
-Terminal=true
+# Terminal=true
 Categories=Education;Science
 # Windows Manager groups windows with the same WM_CLASS
 StartupWMClass=tlist-processor
