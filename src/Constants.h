@@ -20,8 +20,9 @@
 
 class Constants {
   public:   
-    static const char* APPLICATION_NAME;
-    static char* APPLICATION_ICON[];
+    static const char* applicationName;
+    static const char* applicationTitle;
+    static char* applicationIcon[];
     static const UInt_t WINDOW_WIDTH;
     static const UInt_t WINDOW_HEIGHT;
 

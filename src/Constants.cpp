@@ -16,14 +16,15 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #include "Constants.h"
 
-const char* Constants::APPLICATION_NAME = "TLIST Processor";
+const char* Constants::applicationName = "tlist-processor";
+const char* Constants::applicationTitle = "TLIST Processor";
 const UInt_t Constants::WINDOW_WIDTH = 900;
 const UInt_t Constants::WINDOW_HEIGHT = 600;
 
 const std::string Constants::drawOptions[] = { "SURF2", "LEGO2" };
 
-// Created with GIMP from the PNG image
-char* Constants::APPLICATION_ICON[] = {
+// Created with GIMP from the 256x256 PNG image
+char* Constants::applicationIcon[] = {
 "256 256 102 2",
 "  	c None",
 ". 	c #FFFFFF",

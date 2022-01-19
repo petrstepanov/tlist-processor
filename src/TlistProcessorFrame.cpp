@@ -39,7 +39,7 @@
 // ClassImp(TlistProcessorFrame)
 
 TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p) :
-		TGMainFrame(p, Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT) {
+	TGMainFrame(p, Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT) {
 	SetCleanup(kDeepCleanup);
 
 	Connect("CloseWindow()", "TlistProcessorFrame", this, "doCloseWindow()");
@@ -217,9 +217,20 @@ TlistProcessorFrame::TlistProcessorFrame(const TGWindow* p) :
 			new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX | kLHintsExpandY, dx, dx, 0, dx));
 	this->AddFrame(frameBottomBar, new TGLayoutHints(kLHintsLeft | kLHintsTop | kLHintsExpandX, dx, dx, 0, dx));
 
-	// End UI
-	SetWindowName(Constants::APPLICATION_NAME);
-	SetIconPixmap(Constants::APPLICATION_ICON);
+	// For the X window system
+	SetWindowName(Constants::applicationTitle);
+
+	// This I am not sure if we need this? Does not seem to do anything, however let it be here.
+	SetIconName(Constants::applicationName);
+
+	// In GNOME, SetClassHints() tells WM to pick application icon installed on the system
+	SetClassHints(Constants::applicationName, Constants::applicationName);
+
+	// Set X11 Pixmap icon. Theoretically a fallback if icon with above name not installed on the system.
+	// However, GNOME does not seem to support this: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/4953
+	SetIconPixmap(Constants::applicationIcon);
+	
+	// Other stuff
 	MapSubwindows();
 	Layout();
 	Resize(GetDefaultSize());
